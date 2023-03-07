@@ -1,0 +1,7 @@
+{
+	"tp2": {
+    "databaseUrl": "mongodb://localhost:27017",
+    "databaseName": "tp2",
+		"APIKEY": "Place_your_api_key_here"
+	}
+}
