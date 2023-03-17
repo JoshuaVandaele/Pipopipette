@@ -2,6 +2,11 @@ const fs = require('fs');
 
 const dataFolder = "./databases/";
 
+const defaultDatabase = {
+  pendingClient: null,//Pending client, which is waiting for someone else to login
+  runningGames: []//Array that contains array of clients connected together in game
+}
+
 /* Module used to store data in a file */
 
 module.exports = {
@@ -15,10 +20,11 @@ module.exports = {
   },
 
   writeFile: async function(filePath, data){
-    try{
-      await fs.promises.writeFile(dataFolder + filePath, JSON.stringify(data));
-    }catch(err){
-      throw `Error while writing in a saved file : ${err}`;
+    const fullPath = dataFolder + filePath;
+    try {
+      await fs.promises.writeFile(fullPath, JSON.stringify(data));
+    } catch (err) {
+      throw `Error while writing to file: ${err}`;
     }
   },
 
@@ -38,9 +44,11 @@ module.exports = {
     }
   },
 
-  createFileWithDefaults: async function(filePath, defaults){
+  createFileWithDefaults: async function(filePath){
+    const fullPath = dataFolder + filePath;
+    if (fs.existsSync(fullPath))return;//This file already exists, so we don't need to create it
     try{
-      await fs.promises.writeFile(dataFolder + filePath, JSON.stringify(defaults));
+      await fs.promises.writeFile(fullPath, JSON.stringify(defaultDatabase));
     }catch(err){
       throw `Error while creating file with defaults : ${err}`;
     }

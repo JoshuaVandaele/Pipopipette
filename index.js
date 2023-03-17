@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 
 const printLogo = require("./modules/printLogo.js");
 const gameAPIRoutes = require('./modules/gameApi.js');
+const databaseManager = require('./modules/database.js');
 
 //Express initialization
 const app = express();
@@ -26,5 +27,6 @@ app.get('/', (req, res) => {
 //Starting the server
 app.listen(port, () => {
   console.log(`Le serveur est démarré sur le port ${port}`);
+  databaseManager.createFileWithDefaults(CONFIG.DATABASE_NAME);
   printLogo();
 });
