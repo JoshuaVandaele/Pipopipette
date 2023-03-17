@@ -70,3 +70,12 @@ class Square:
     # <----- str ----->
     
     def __str__(self: Square) -> str: return f"[id:{self.__ID}(l:{self.__left.owner_ID},r:{self.__right.owner_ID},t{self.__top.owner_ID},d{self.__down.owner_ID}), owner:{self.__square_owner}]"   
+    
+    def copy(self: Square) -> Square:
+        new_square = Square(id=self.ID)
+        new_square.left.owner_ID = self.left.owner_ID
+        new_square.right.owner_ID = self.right.owner_ID
+        new_square.top.owner_ID = self.top.owner_ID
+        new_square.down.owner_ID = self.down.owner_ID
+        new_square.square_owner = self.square_owner
+        return new_square

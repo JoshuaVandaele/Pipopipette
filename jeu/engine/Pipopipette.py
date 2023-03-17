@@ -1,6 +1,7 @@
 # <========== Import ==========>
 
 from __future__ import annotations
+from random import shuffle
 from typing import Final
 from jeu.engine.Square.Square import Square
 from typing import TYPE_CHECKING
@@ -27,6 +28,7 @@ class Pipopipette():
         self.__WIDTH: Final[int] = width
         self.__HEIGHT: Final[int] = height
         self.__list_square: list[Square] = [Square(i) for i in range(width * height)]
+        shuffle(self.__list_square)
     
     # <----- getter ----->
     
@@ -82,7 +84,6 @@ class Pipopipette():
                 case 'l':
                     square.left = owner_ID
                     if ((neighbor := self.get_square_by_ID(square_ID-1)) != None and square_ID%self.__WIDTH):
-                        print("set R", self.__WIDTH, neighbor.ID, neighbor.ID%self.__WIDTH)
                         neighbor.right = owner_ID
                 case 'r':
                     square.right = owner_ID
@@ -97,13 +98,12 @@ class Pipopipette():
                     if (neighbor := self.get_square_by_ID(square_ID+self.__WIDTH)) != None:
                         neighbor.top = owner_ID
 
-    def get_side(self: Pipopipette, square_ID: int, side: str, owner_ID: int) ->  Segment|None:
+    def get_side(self: Pipopipette, square_ID: int, side: str) ->  Segment|None:
         """Gets the owner of a side.
         
         Args:
             square_ID (int): ID of the Squre to edit.
             side (str): 'l'; 'r', 't', or 'd'. Side to edit.
-            owner_ID (int): ID of the player who placed this side
 
         """
         if (square := self.get_square_by_ID(square_ID)) != None:
@@ -141,3 +141,8 @@ class Pipopipette():
                 case 'd':
                     return square.down.owner_ID == -1
         return False
+
+    def copy(self):
+        copied_instance = Pipopipette(self.__WIDTH, self.__HEIGHT)
+        copied_instance.list_square = [square.copy() for square in self.list_square]
+        return copied_instance

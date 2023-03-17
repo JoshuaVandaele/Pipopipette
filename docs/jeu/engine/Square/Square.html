@@ -97,7 +97,16 @@ class Square:
       
     # &lt;----- str -----&gt;
     
-    def __str__(self: Square) -&gt; str: return f&#34;[id:{self.__ID}(l:{self.__left.owner_ID},r:{self.__right.owner_ID},t{self.__top.owner_ID},d{self.__down.owner_ID}), owner:{self.__square_owner}]&#34;   </code></pre>
+    def __str__(self: Square) -&gt; str: return f&#34;[id:{self.__ID}(l:{self.__left.owner_ID},r:{self.__right.owner_ID},t{self.__top.owner_ID},d{self.__down.owner_ID}), owner:{self.__square_owner}]&#34;   
+    
+    def copy(self: Square) -&gt; Square:
+        new_square = Square(id=self.ID)
+        new_square.left.owner_ID = self.left.owner_ID
+        new_square.right.owner_ID = self.right.owner_ID
+        new_square.top.owner_ID = self.top.owner_ID
+        new_square.down.owner_ID = self.down.owner_ID
+        new_square.square_owner = self.square_owner
+        return new_square</code></pre>
 </details>
 </section>
 <section>
@@ -182,7 +191,16 @@ class Square:
       
     # &lt;----- str -----&gt;
     
-    def __str__(self: Square) -&gt; str: return f&#34;[id:{self.__ID}(l:{self.__left.owner_ID},r:{self.__right.owner_ID},t{self.__top.owner_ID},d{self.__down.owner_ID}), owner:{self.__square_owner}]&#34;   </code></pre>
+    def __str__(self: Square) -&gt; str: return f&#34;[id:{self.__ID}(l:{self.__left.owner_ID},r:{self.__right.owner_ID},t{self.__top.owner_ID},d{self.__down.owner_ID}), owner:{self.__square_owner}]&#34;   
+    
+    def copy(self: Square) -&gt; Square:
+        new_square = Square(id=self.ID)
+        new_square.left.owner_ID = self.left.owner_ID
+        new_square.right.owner_ID = self.right.owner_ID
+        new_square.top.owner_ID = self.top.owner_ID
+        new_square.down.owner_ID = self.down.owner_ID
+        new_square.square_owner = self.square_owner
+        return new_square</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
@@ -253,6 +271,28 @@ def top(self: Square) -&gt; Segment: return self.__top</code></pre>
 </details>
 </dd>
 </dl>
+<h3>Methods</h3>
+<dl>
+<dt id="jeu.engine.Square.Square.Square.copy"><code class="name flex">
+<span>def <span class="ident">copy</span></span>(<span>self: <a title="jeu.engine.Square.Square.Square" href="#jeu.engine.Square.Square.Square">Square</a>) ‑> <a title="jeu.engine.Square.Square.Square" href="#jeu.engine.Square.Square.Square">Square</a></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def copy(self: Square) -&gt; Square:
+    new_square = Square(id=self.ID)
+    new_square.left.owner_ID = self.left.owner_ID
+    new_square.right.owner_ID = self.right.owner_ID
+    new_square.top.owner_ID = self.top.owner_ID
+    new_square.down.owner_ID = self.down.owner_ID
+    new_square.square_owner = self.square_owner
+    return new_square</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -274,6 +314,7 @@ def top(self: Square) -&gt; Segment: return self.__top</code></pre>
 <h4><code><a title="jeu.engine.Square.Square.Square" href="#jeu.engine.Square.Square.Square">Square</a></code></h4>
 <ul class="two-column">
 <li><code><a title="jeu.engine.Square.Square.Square.ID" href="#jeu.engine.Square.Square.Square.ID">ID</a></code></li>
+<li><code><a title="jeu.engine.Square.Square.Square.copy" href="#jeu.engine.Square.Square.Square.copy">copy</a></code></li>
 <li><code><a title="jeu.engine.Square.Square.Square.down" href="#jeu.engine.Square.Square.Square.down">down</a></code></li>
 <li><code><a title="jeu.engine.Square.Square.Square.left" href="#jeu.engine.Square.Square.Square.left">left</a></code></li>
 <li><code><a title="jeu.engine.Square.Square.Square.right" href="#jeu.engine.Square.Square.Square.right">right</a></code></li>

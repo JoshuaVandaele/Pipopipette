@@ -50,7 +50,7 @@ class PipopipetteGameplay():
         &#34;&#34;&#34;
         self.__LIST_PLAYER: Final[list[Player]] = [Player(list_player_name[i],i) for i in range(len(list_player_name))]
         self.__pipopipette: Pipopipette = pipopipette
-        self.__current_player_ID: int = self.__LIST_PLAYER[0].ID
+        self.__current_player_ID: int = self.__LIST_PLAYER[0].ID if len(self.__LIST_PLAYER) &gt; 0 else 0
             
     # &lt;----- getter -----&gt;
     
@@ -113,7 +113,22 @@ class PipopipetteGameplay():
             
         if total_score &lt; self.pipopipette.HEIGHT * self.pipopipette.WIDTH: return False
         return True
-        </code></pre>
+        
+    
+    def copy(self):
+        &#34;&#34;&#34;
+        Returns a deep copy of this PipopipetteGameplay instance.
+        &#34;&#34;&#34;
+        new_gameplay = PipopipetteGameplay([], pipopipette=self.__pipopipette.copy())
+        new_gameplay.__current_player_ID = self.__current_player_ID
+
+        # Make a deep copy of each player object in the list
+        new_gameplay.__LIST_PLAYER = [] # type: ignore
+        for player in self.__LIST_PLAYER:
+            new_player = Player(player.NAME, player.ID, player.score.value)
+            new_gameplay.__LIST_PLAYER.append(new_player)
+
+        return new_gameplay</code></pre>
 </details>
 </section>
 <section>
@@ -157,7 +172,7 @@ class PipopipetteGameplay():
         &#34;&#34;&#34;
         self.__LIST_PLAYER: Final[list[Player]] = [Player(list_player_name[i],i) for i in range(len(list_player_name))]
         self.__pipopipette: Pipopipette = pipopipette
-        self.__current_player_ID: int = self.__LIST_PLAYER[0].ID
+        self.__current_player_ID: int = self.__LIST_PLAYER[0].ID if len(self.__LIST_PLAYER) &gt; 0 else 0
             
     # &lt;----- getter -----&gt;
     
@@ -219,7 +234,23 @@ class PipopipetteGameplay():
         total_score: int = sum(self.get_score())
             
         if total_score &lt; self.pipopipette.HEIGHT * self.pipopipette.WIDTH: return False
-        return True</code></pre>
+        return True
+        
+    
+    def copy(self):
+        &#34;&#34;&#34;
+        Returns a deep copy of this PipopipetteGameplay instance.
+        &#34;&#34;&#34;
+        new_gameplay = PipopipetteGameplay([], pipopipette=self.__pipopipette.copy())
+        new_gameplay.__current_player_ID = self.__current_player_ID
+
+        # Make a deep copy of each player object in the list
+        new_gameplay.__LIST_PLAYER = [] # type: ignore
+        for player in self.__LIST_PLAYER:
+            new_player = Player(player.NAME, player.ID, player.score.value)
+            new_gameplay.__LIST_PLAYER.append(new_player)
+
+        return new_gameplay</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
@@ -259,6 +290,31 @@ def pipopipette(self: PipopipetteGameplay) -&gt; Pipopipette: return self.__pipo
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.copy"><code class="name flex">
+<span>def <span class="ident">copy</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns a deep copy of this PipopipetteGameplay instance.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def copy(self):
+    &#34;&#34;&#34;
+    Returns a deep copy of this PipopipetteGameplay instance.
+    &#34;&#34;&#34;
+    new_gameplay = PipopipetteGameplay([], pipopipette=self.__pipopipette.copy())
+    new_gameplay.__current_player_ID = self.__current_player_ID
+
+    # Make a deep copy of each player object in the list
+    new_gameplay.__LIST_PLAYER = [] # type: ignore
+    for player in self.__LIST_PLAYER:
+        new_player = Player(player.NAME, player.ID, player.score.value)
+        new_gameplay.__LIST_PLAYER.append(new_player)
+
+    return new_gameplay</code></pre>
+</details>
+</dd>
 <dt id="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.game_over"><code class="name flex">
 <span>def <span class="ident">game_over</span></span>(<span>self: <a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay" href="#jeu.engine.PipopipetteGameplay.PipopipetteGameplay">PipopipetteGameplay</a>) ‑> bool</span>
 </code></dt>
@@ -366,6 +422,7 @@ def pipopipette(self: PipopipetteGameplay) -&gt; Pipopipette: return self.__pipo
 <h4><code><a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay" href="#jeu.engine.PipopipetteGameplay.PipopipetteGameplay">PipopipetteGameplay</a></code></h4>
 <ul class="two-column">
 <li><code><a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.LIST_PLAYER" href="#jeu.engine.PipopipetteGameplay.PipopipetteGameplay.LIST_PLAYER">LIST_PLAYER</a></code></li>
+<li><code><a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.copy" href="#jeu.engine.PipopipetteGameplay.PipopipetteGameplay.copy">copy</a></code></li>
 <li><code><a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.current_player_ID" href="#jeu.engine.PipopipetteGameplay.PipopipetteGameplay.current_player_ID">current_player_ID</a></code></li>
 <li><code><a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.game_over" href="#jeu.engine.PipopipetteGameplay.PipopipetteGameplay.game_over">game_over</a></code></li>
 <li><code><a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.get_score" href="#jeu.engine.PipopipetteGameplay.PipopipetteGameplay.get_score">get_score</a></code></li>

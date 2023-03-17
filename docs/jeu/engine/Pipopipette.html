@@ -110,7 +110,6 @@ class Pipopipette():
                 case &#39;l&#39;:
                     square.left = owner_ID
                     if ((neighbor := self.get_square_by_ID(square_ID-1)) != None and square_ID%self.__WIDTH):
-                        print(&#34;set R&#34;, self.__WIDTH, neighbor.ID, neighbor.ID%self.__WIDTH)
                         neighbor.right = owner_ID
                 case &#39;r&#39;:
                     square.right = owner_ID
@@ -168,7 +167,12 @@ class Pipopipette():
                     return square.top.owner_ID == -1
                 case &#39;d&#39;:
                     return square.down.owner_ID == -1
-        return False</code></pre>
+        return False
+
+    def copy(self):
+        copied_instance = Pipopipette(self.__WIDTH, self.__HEIGHT)
+        copied_instance.list_square = [square.copy() for square in self.list_square]
+        return copied_instance</code></pre>
 </details>
 </section>
 <section>
@@ -269,7 +273,6 @@ class Pipopipette():
                 case &#39;l&#39;:
                     square.left = owner_ID
                     if ((neighbor := self.get_square_by_ID(square_ID-1)) != None and square_ID%self.__WIDTH):
-                        print(&#34;set R&#34;, self.__WIDTH, neighbor.ID, neighbor.ID%self.__WIDTH)
                         neighbor.right = owner_ID
                 case &#39;r&#39;:
                     square.right = owner_ID
@@ -327,7 +330,12 @@ class Pipopipette():
                     return square.top.owner_ID == -1
                 case &#39;d&#39;:
                     return square.down.owner_ID == -1
-        return False</code></pre>
+        return False
+
+    def copy(self):
+        copied_instance = Pipopipette(self.__WIDTH, self.__HEIGHT)
+        copied_instance.list_square = [square.copy() for square in self.list_square]
+        return copied_instance</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
@@ -367,6 +375,21 @@ def list_square(self: Pipopipette) -&gt; list[Square]: return self.__list_square
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="jeu.engine.Pipopipette.Pipopipette.copy"><code class="name flex">
+<span>def <span class="ident">copy</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def copy(self):
+    copied_instance = Pipopipette(self.__WIDTH, self.__HEIGHT)
+    copied_instance.list_square = [square.copy() for square in self.list_square]
+    return copied_instance</code></pre>
+</details>
+</dd>
 <dt id="jeu.engine.Pipopipette.Pipopipette.get_side"><code class="name flex">
 <span>def <span class="ident">get_side</span></span>(<span>self: <a title="jeu.engine.Pipopipette.Pipopipette" href="#jeu.engine.Pipopipette.Pipopipette">Pipopipette</a>, square_ID: int, side: str, owner_ID: int) ‑> Segment | None</span>
 </code></dt>
@@ -468,7 +491,6 @@ def list_square(self: Pipopipette) -&gt; list[Square]: return self.__list_square
             case &#39;l&#39;:
                 square.left = owner_ID
                 if ((neighbor := self.get_square_by_ID(square_ID-1)) != None and square_ID%self.__WIDTH):
-                    print(&#34;set R&#34;, self.__WIDTH, neighbor.ID, neighbor.ID%self.__WIDTH)
                     neighbor.right = owner_ID
             case &#39;r&#39;:
                 square.right = owner_ID
@@ -552,6 +574,7 @@ def list_square(self: Pipopipette) -&gt; list[Square]: return self.__list_square
 <ul class="two-column">
 <li><code><a title="jeu.engine.Pipopipette.Pipopipette.HEIGHT" href="#jeu.engine.Pipopipette.Pipopipette.HEIGHT">HEIGHT</a></code></li>
 <li><code><a title="jeu.engine.Pipopipette.Pipopipette.WIDTH" href="#jeu.engine.Pipopipette.Pipopipette.WIDTH">WIDTH</a></code></li>
+<li><code><a title="jeu.engine.Pipopipette.Pipopipette.copy" href="#jeu.engine.Pipopipette.Pipopipette.copy">copy</a></code></li>
 <li><code><a title="jeu.engine.Pipopipette.Pipopipette.get_side" href="#jeu.engine.Pipopipette.Pipopipette.get_side">get_side</a></code></li>
 <li><code><a title="jeu.engine.Pipopipette.Pipopipette.get_square_by_ID" href="#jeu.engine.Pipopipette.Pipopipette.get_square_by_ID">get_square_by_ID</a></code></li>
 <li><code><a title="jeu.engine.Pipopipette.Pipopipette.list_square" href="#jeu.engine.Pipopipette.Pipopipette.list_square">list_square</a></code></li>

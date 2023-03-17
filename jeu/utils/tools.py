@@ -1,5 +1,6 @@
 import tkinter
 import tkinter.filedialog
+from enum import Enum, IntEnum
 
 
 def prompt_for_file(file_kind: str, extensions: list[str]) -> str:
@@ -17,3 +18,8 @@ def prompt_for_file(file_kind: str, extensions: list[str]) -> str:
     file_name = tkinter.filedialog.askopenfilename(filetypes=[(file_kind, ' '.join(extensions))])
     top.destroy()
     return file_name
+
+class gamemode(IntEnum):
+    LOCAL = 0
+    AI = 1
+    ONLINE = 2

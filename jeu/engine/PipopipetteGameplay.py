@@ -22,7 +22,7 @@ class PipopipetteGameplay():
         """
         self.__LIST_PLAYER: Final[list[Player]] = [Player(list_player_name[i],i) for i in range(len(list_player_name))]
         self.__pipopipette: Pipopipette = pipopipette
-        self.__current_player_ID: int = self.__LIST_PLAYER[0].ID
+        self.__current_player_ID: int = self.__LIST_PLAYER[0].ID if len(self.__LIST_PLAYER) > 0 else 0
             
     # <----- getter ----->
     
@@ -86,3 +86,18 @@ class PipopipetteGameplay():
         if total_score < self.pipopipette.HEIGHT * self.pipopipette.WIDTH: return False
         return True
         
+    
+    def copy(self):
+        """
+        Returns a deep copy of this PipopipetteGameplay instance.
+        """
+        new_gameplay = PipopipetteGameplay([], pipopipette=self.__pipopipette.copy())
+        new_gameplay.__current_player_ID = self.__current_player_ID
+
+        # Make a deep copy of each player object in the list
+        new_gameplay.__LIST_PLAYER = [] # type: ignore
+        for player in self.__LIST_PLAYER:
+            new_player = Player(player.NAME, player.ID, player.score.value)
+            new_gameplay.__LIST_PLAYER.append(new_player)
+
+        return new_gameplay
