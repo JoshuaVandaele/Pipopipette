@@ -2,6 +2,7 @@
 const CONFIG = require('../config.js');
 const crypto = require('crypto');
 const databaseManager = require('./database.js');
+const axios = require('axios');
 
 //Function used to init the API routes used to manage a game
 module.exports = async(app)=>{
@@ -28,7 +29,7 @@ module.exports = async(app)=>{
             database.pendingClient,
             {
               token: token,
-              ip: req.ip,
+              ip: req.connection.remoteAddress,
               port: replyPort
             }
           ]);//We can now create a new game and push clients in this game
@@ -70,10 +71,12 @@ module.exports = async(app)=>{
       let database = await databaseManager.readFile(CONFIG.DATABASE_NAME);
 
       let foundGameId;//Will store the index of game where client is
+      let fondUserId;//Will store the index of the user in this game
       for(let i=0; i<database.runningGames.length; i++){//For each game
         for(let j=0; j<database.runningGames[i].length; j++){//For each client in it
           if(database.runningGames[i][j].token == token){//If the saved client has the same token as the token given in request
             foundGameId = i;
+            fondUserId = j;
             break;
           }
         }
@@ -82,6 +85,15 @@ module.exports = async(app)=>{
 
       if(foundGameId!==undefined){
         //Token found
+        let data = req.body;
+        delete data.token;
+
+        for(let i=0; i<database.runningGames[foundGameId].length; i++){
+          if(i == fondUserId)continue;
+          axios.post("http://"+database.runningGames[foundGameId][i].ip+":"+database.runningGames[foundGameId][i].port, data);
+        }
+
+
         res.json({ message:"OK" });
       }else{
         //The token wasn't found...

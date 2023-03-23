@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
 
 
 //Starting the server
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`Le serveur est démarré sur le port ${port}`);
   databaseManager.createFileWithDefaults(CONFIG.DATABASE_NAME);
   printLogo();
