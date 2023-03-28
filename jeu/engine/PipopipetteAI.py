@@ -1,9 +1,7 @@
-import time
-from random import choice, shuffle
+from random import choice
 from typing import Generator
 
 from jeu.engine.PipopipetteGameplay import PipopipetteGameplay
-from jeu.engine.Square.Segment import Segment
 
 
 class PipopipetteAI:
@@ -56,13 +54,12 @@ class PipopipetteAI:
             return (None, None)
 
     @staticmethod
-    def move_minmax(gameplay: PipopipetteGameplay, depth: int = 2, time_limit: float = 5.0) -> tuple[None, None] | tuple[int, str]:
+    def move_minmax(gameplay: PipopipetteGameplay, depth: int = 2) -> tuple[None, None] | tuple[int, str]:
         """Pick a move for the AI to play by simulating the next moves
 
         Args:
             gameplay (PipopipetteGameplay): Game to play on
             depth (int): Maximum depth to search
-            time_limit (float): Maximum time limit for search, in seconds
 
         Returns:
             tuple[None, None]|tuple[int, str]: Resulting square and side
@@ -94,7 +91,6 @@ class PipopipetteAI:
                     break
             return value
 
-        start_time = time.monotonic()
         best_move = (None, None)
         best_value = float('-inf')
         alpha = float('-inf')
@@ -106,10 +102,6 @@ class PipopipetteAI:
                 best_value = value
                 best_move = move
             alpha = max(alpha, best_value)
-
-            elapsed_time = time.monotonic() - start_time
-            if elapsed_time >= time_limit:
-                break
         return best_move
 
     @staticmethod
