@@ -14,7 +14,7 @@ from jeu.utils.font_manager import FontManager
 from jeu.utils import settings
 from jeu.utils.tools import gamemode
 
-MAX_SIZE = 25
+MAX_SIZE = 7
 MIN_SIZE = 2
 
 def main_menu(screen: pygame.surface.Surface):

@@ -115,32 +115,11 @@ class PipopipetteAI:
             float: Evaluation score
         """
         opponent_score, ai_score = gameplay.get_score()
-        potential_squares = len(PipopipetteAI.get_potential_squares(gameplay))
 
         # Compute the evaluation score based on the above factors
-        score = (ai_score*2) - opponent_score + potential_squares
+        score = (ai_score*2) - opponent_score
 
         return score
-
-    @staticmethod
-    def get_potential_squares(gameplay: PipopipetteGameplay) -> list[int]:
-        """Get the IDs of the squares that could potentially be completed
-        by filling a side of the specified square.
-
-        Args:
-            gameplay (PipopipetteGameplay): Game to use
-
-        Returns:
-            list[int]: IDs of the potential squares that could be completed
-        """
-        potential_squares = []
-
-        for square in gameplay.pipopipette.list_square:
-            if square.square_owner == -1:
-                # One side is open
-                if [square.left.owner_ID, square.right.owner_ID, square.top.owner_ID, square.down.owner_ID].count(-1) == 1:
-                    potential_squares.append(0)
-        return potential_squares
 
     @staticmethod
     def get_next_state(gameplay: PipopipetteGameplay, square_id: int, side: str) -> 'PipopipetteGameplay':
