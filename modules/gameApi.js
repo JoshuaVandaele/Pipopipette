@@ -90,7 +90,7 @@ module.exports = async(app)=>{
 
         for(let i=0; i<database.runningGames[foundGameId].length; i++){
           if(i == fondUserId)continue;
-          axios.post("http://"+database.runningGames[foundGameId][i].ip+":"+database.runningGames[foundGameId][i].port, data);
+          axios.post("http://"+database.runningGames[foundGameId][i].ip+":"+database.runningGames[foundGameId][i].port+"/next", data);
         }
 
 
@@ -103,6 +103,42 @@ module.exports = async(app)=>{
     }else{
       res.status(400).json({message: 'Invalid request !',
         valid_query: {token:"token",anythingYouWantToSend:"Any"}
+      });
+    }
+  });
+
+  app.post('/end', async(req, res) => {
+    const token = req.body.token;
+    if(token){
+
+      let database = await databaseManager.readFile(CONFIG.DATABASE_NAME);
+
+      let foundGameId;//Will store the index of game where client is
+      for(let i=0; i<database.runningGames.length; i++){//For each game
+        for(let j=0; j<database.runningGames[i].length; j++){//For each client in it
+          if(database.runningGames[i][j].token == token){//If the saved client has the same token as the token given in request
+            foundGameId = i;
+            break;
+          }
+        }
+        if(foundGameId)break;
+      }
+
+      if(foundGameId!==undefined){
+        //Token found
+
+        database.runningGames.splice(foundGameId, 1);//Remove game from database
+        await databaseManager.writeFile(CONFIG.DATABASE_NAME, database);
+
+        res.json({ message:"OK" });
+      }else{
+        //The token wasn't found...
+        res.status(401).json({ message: "Access denied" });
+      }
+
+    }else{
+      res.status(400).json({message: 'Invalid request !',
+        valid_query: {token:"token"}
       });
     }
   });
