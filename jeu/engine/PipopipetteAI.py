@@ -3,6 +3,7 @@ from random import choice, shuffle
 from typing import Generator
 
 from jeu.engine.PipopipetteGameplay import PipopipetteGameplay
+from jeu.engine.Square.Segment import Segment
 
 
 class PipopipetteAI:
@@ -19,15 +20,23 @@ class PipopipetteAI:
         Yields:
             Generator[tuple[int, str], None, None]: Generator
         """
+        # List of checked sides: dict[side, list[square_id]]
+        checked_sides: dict[str, list[int]] = {'l': [], 'r': [], 't': [], 'd': []}
+        width: int = gameplay.pipopipette.WIDTH
+        
         for square in gameplay.pipopipette.list_square:
             if square.square_owner == -1:
-                if square.left.owner_ID == -1:
+                if square.left.owner_ID == -1 and (square.ID not in checked_sides["l"]):
+                    checked_sides["r"].append(square.ID-1)
                     yield square.ID, 'l'
-                if square.top.owner_ID == -1:
+                if square.top.owner_ID == -1 and (square.ID not in checked_sides["t"]):
+                    checked_sides["d"].append(square.ID-width)
                     yield square.ID, 't'
-                if square.right.owner_ID == -1:
+                if square.right.owner_ID == -1 and (square.ID not in checked_sides["r"]):
+                    checked_sides["l"].append(square.ID+1)
                     yield square.ID, 'r'
-                if square.down.owner_ID == -1:
+                if square.down.owner_ID == -1 and (square.ID not in checked_sides["d"]):
+                    checked_sides["t"].append(square.ID+width)
                     yield square.ID, 'd'
 
     @staticmethod
