@@ -6,8 +6,8 @@ from time import time
 
 from jeu.engine.Player.Player import Player
 
-SAVE_FOLDER_PATH = str(Path.home()) + "/Pipopipette"
-SAVE_FILE_PATH = SAVE_FOLDER_PATH + "/players.json"
+SAVE_FOLDER_PATH = f"{str(Path.home())}/Pipopipette"
+SAVE_FILE_PATH = f"{SAVE_FOLDER_PATH}/players.json"
 
 class SaveSystem():
     """
@@ -33,12 +33,12 @@ class SaveSystem():
             if json_object[i]['username'] == player.NAME:
                 # if bcrypt.checkpw(str.encode(player.getPassword()), str.encode(jsonObject[i]['password'])):
                 # Found user to edit
-                new_entry = {}  # I create a new entry that will replace the old one
-                new_entry['username'] = player.NAME
-                new_entry['password'] = json_object[i]['password']
-                new_entry['id'] = player.ID
-                new_entry['points'] = player.score.value
-
+                new_entry = {
+                    'username': player.NAME,
+                    'password': json_object[i]['password'],
+                    'id': player.ID,
+                    'points': player.score.value,
+                }
                 json_object[i] = new_entry  # Old entry replaced
 
         with open(SAVE_FILE_PATH, "w") as file:  # The new file with data is written
@@ -65,10 +65,9 @@ class SaveSystem():
             if element['username'] == username:
                 if bcrypt.checkpw(str.encode(password), str.encode(element['password'])):
                     return Player(username, element['id'], element['points'])
-                else:
-                    # User found, but wrong password. We don't need to continue looking for the right user
-                    print("Wrong password !")
-                    return None
+                # User found, but wrong password. We don't need to continue looking for the right user
+                print("Wrong password !")
+                return None
         return None  # Don't found this user
 
     @staticmethod
@@ -87,12 +86,7 @@ class SaveSystem():
             json_object = json.load(json_file)
             json_file.close()
 
-        taken = False
-
-        for element in json_object:
-            if element['username'] == username:
-                taken = True
-        return taken  # Don't found this username
+        return any(element['username'] == username for element in json_object)
 
     @staticmethod
     def create_user(username: str, password: str, id: int, points: int = 0) -> Player|None:
@@ -160,14 +154,14 @@ class SaveSystem():
                 f.write("[]")
 
         # Try and read the save file to see if it's corrupted,
-        # if it is, make a backup of the old one and create a new one 
+        # if it is, make a backup of the old one and create a new one
         with open(SAVE_FILE_PATH) as json_file:
             try:
                 json.load(json_file)
             except json.JSONDecodeError:
                 print("The players file is corrupted! Creating a new one..")
                 corrupted_file = Path(SAVE_FOLDER_PATH)
-                corrupted_file.rename(Path(SAVE_FOLDER_PATH+f"/{time()}.json"))
+                corrupted_file.rename(Path(f"{SAVE_FOLDER_PATH}/{time()}.json"))
                 with open(SAVE_FILE_PATH, 'w') as f:
                     f.write("[]")
 

@@ -69,7 +69,7 @@ class Textbox(UI):
             event (pygame.event.Event): Keydown event to process
         """
             
-        match (event.key):
+        match event.key:
             case pygame.K_BACKSPACE:
                 self.text = self.text[:-1]
             case pygame.K_ESCAPE:
@@ -77,9 +77,10 @@ class Textbox(UI):
             case _:
                 # If we haven't hit the max char limit/there isn't one,
                 # and if the character is in the list of accepted chars/there isn't one, append to the string
-                if (self.max_char == 0 or len(self.text) < self.max_char):
-                    if (not self.accepted_chars or event.unicode in self.accepted_chars):
-                        self.text += event.unicode
+                if (self.max_char == 0 or len(self.text) < self.max_char) and (
+                    not self.accepted_chars or event.unicode in self.accepted_chars
+                ):
+                    self.text += event.unicode
 
     def update(self: Textbox, event: pygame.event.Event):
         """Updates the textbox according to a give event.
@@ -88,7 +89,7 @@ class Textbox(UI):
             event (pygame.event.Event): Event to process
         """
         mouse_pos: tuple[float, float] = (pygame.mouse.get_pos()[0]-self.detection_offset[0], pygame.mouse.get_pos()[1]-self.detection_offset[1])
-        match (event.type):
+        match event.type:
             case pygame.MOUSEBUTTONUP:
                 if self.rect.collidepoint(mouse_pos):
                     self.repeat_settings = pygame.key.get_repeat()
@@ -97,7 +98,7 @@ class Textbox(UI):
                 else:
                     try:
                         pygame.key.set_repeat(*self.repeat_settings)
-                    except:
+                    except Exception:
                         pass
                     self.focused = False
             case pygame.KEYDOWN:

@@ -52,8 +52,7 @@ def formatted_time(time_in_seconds: int) -> str:
     Returns:
         str: time in the format "mm:ss"
     """
-    minutes = time_in_seconds // 60
-    seconds = time_in_seconds % 60
+    minutes, seconds = divmod(time_in_seconds, 60)
     return f"{minutes:02d}:{seconds:02d}"
 
 
@@ -145,6 +144,7 @@ def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] =
     def restart_button_handler():
         end_popup.active = False
         game(screen, mode, size, players, config)
+
     # Add a vertically centered restart button
     end_popup_restart_button = Button(
         screen=end_popup.surface,
@@ -179,7 +179,7 @@ def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] =
     owned_segments: dict[tuple[int, int, str], int] = {}
 
     def ij_from_square_id(square_id: int, side: str) -> tuple[int, int]:
-        if side in ('t', 'd'):
+        if side in {'t', 'd'}:
             gi: int = square_id % gameplay.pipopipette.WIDTH
             gj: int = square_id//gameplay.pipopipette.WIDTH
             if side == 'd':
@@ -231,7 +231,7 @@ def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] =
             print(square_id, side, (gi, gj), "is not a valid target!")
 
     def square_id_from_ij(gi: int, gj: int, side: str) -> int:
-        if side in ('t', 'd'):
+        if side in {'t', 'd'}:
             square_id: int = gj * gameplay.pipopipette.WIDTH + gi
             if side == 'd':
                 square_id += gameplay.pipopipette.WIDTH
@@ -300,22 +300,22 @@ def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] =
                 if j != size[1]:
                     # Select the color based on who owns the segment
                     color: str = "white"
-                    
-                    for key in counter.keys():
+
+                    for key in counter:
                         counter[key] -= 1
                         if counter[key] == 0:
                             color = PLAYER_COLORS[owned_segments[key]]
-                             
-                    
+
+
                     if (i, j, 'l') in owned_segments:
                         color = PLAYER_COLORS[owned_segments[(i, j, 'l')]]
-                    
+
                     if (i, j, 'r') in owned_segments:
                         if i == gameplay.pipopipette.WIDTH:
                             color = PLAYER_COLORS[owned_segments[(i, j, 'r')]]
                         else:
                             counter[(i,j,'r')] = gameplay.pipopipette.WIDTH
-                    
+
                     def horizontal_segment_handler(i: int, j: int):
                         """Calculates the square's ID and segment clicked and calls `segment_handler`
 
@@ -330,6 +330,7 @@ def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] =
                         square_id = newi+size[0]*j
 
                         segment_handler(square_id, side)
+
                     # Creates a horizontal segment
                     y_segment: Button = Button(
                         screen=screen,
@@ -358,10 +359,14 @@ def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] =
             labels["timer"] = get_stopwatch_label(start_time_in_seconds, game_font)
             labels["player1_score"] = get_score_label(score[0], game_font, True)
             labels["player2_score"] = get_score_label(score[1], game_font, False)
-            if "timer" in config and config["timer"] > 0:
-                if (time.time()-start_time_in_seconds > config["timer"]) and (end_update_counter == 0):
-                    end_update_counter = 1
-                    end_flag = 1
+            if (
+                "timer" in config
+                and config["timer"] > 0
+                and (time.time() - start_time_in_seconds > config["timer"])
+                and (end_update_counter == 0)
+            ):
+                end_update_counter = 1
+                end_flag = 1
         # Display the FPS counter in console
         print(int(clock.get_fps()), end=" FPS    \r")
         # Display the background to the screen first /!\

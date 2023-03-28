@@ -4,8 +4,8 @@ from time import time
 
 from pathlib import Path
 
-SAVE_FOLDER_PATH = str(Path.home()) + "/Pipopipette"
-SAVE_FILE_PATH = SAVE_FOLDER_PATH + "/settings.json"
+SAVE_FOLDER_PATH = f"{str(Path.home())}/Pipopipette"
+SAVE_FILE_PATH = f"{SAVE_FOLDER_PATH}/settings.json"
 
 DEFAULT_SETTINGS = {
     "timer": 60
@@ -20,15 +20,16 @@ def integrity_check(settings: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict[str, Any]: Settings with checked integrity
     """
-    for setting_name, setting_value in settings.items():
+    for setting_name in settings:
         if setting_name not in DEFAULT_SETTINGS:
             settings.pop(setting_name)
 
-    if "timer" in settings:
-        if  (type(settings["timer"]) != int
-            ) or (settings["timer"] < 0
-        ):
-            settings.pop("timer")
+    if (
+        "timer" in settings
+        and (type(settings["timer"]) != int)
+        or (settings["timer"] < 0)
+    ):
+        settings.pop("timer")
     return settings
 
 def __ensure_exists():
@@ -42,7 +43,7 @@ def __ensure_exists():
             f.write("{}")
 
     # Try and read the save file to see if it's corrupted,
-    # if it is, make a backup of the old one and create a new one 
+    # if it is, make a backup of the old one and create a new one
     with open(SAVE_FILE_PATH) as json_file:
         try:
             json.load(json_file)
@@ -50,7 +51,7 @@ def __ensure_exists():
             print("The settings file is corrupted! Creating a new one..")
             print(f"(Error: {e})")
             corrupted_file = Path(SAVE_FOLDER_PATH)
-            corrupted_file.rename(Path(SAVE_FOLDER_PATH+f"/{time()}.json"))
+            corrupted_file.rename(Path(f"{SAVE_FOLDER_PATH}/{time()}.json"))
             with open(SAVE_FILE_PATH, 'w') as f:
                 f.write("{}")
 

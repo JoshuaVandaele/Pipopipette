@@ -49,9 +49,7 @@ class Pipopipette():
     # <----- str ----->
 
     def __str__(self: Pipopipette) -> str:
-        return_str = ""
-        for square in self.__list_square: return_str += square.__str__() + " "
-        return return_str
+        return "".join(f"{square.__str__()} " for square in self.__list_square)
     
      # <----- get_square_by_ID ----->
     
@@ -64,13 +62,11 @@ class Pipopipette():
         Returns:
             The found square, or None
         """
-        for square in self.__list_square:
-            if square.ID == id: return square
-        return None
+        return next((square for square in self.__list_square if square.ID == id), None)
     
     # <----- set_side ----->
     
-    def set_side(self: Pipopipette, square_ID: int, side: str, owner_ID: int) ->  None:
+    def set_side(self: Pipopipette, square_ID: int, side: str, owner_ID: int) -> None:
         """Define the owner of a side.
         
         Args:
@@ -79,24 +75,25 @@ class Pipopipette():
             owner_ID (int): ID of the player who placed this side
 
         """
-        if (square := self.get_square_by_ID(square_ID)) != None:
-            match side:
-                case 'l':
-                    square.left = owner_ID
-                    if ((neighbor := self.get_square_by_ID(square_ID-1)) != None and square_ID%self.__WIDTH):
-                        neighbor.right = owner_ID
-                case 'r':
-                    square.right = owner_ID
-                    if ((neighbor := self.get_square_by_ID(square_ID+1)) != None and neighbor.ID%(self.__WIDTH)):
-                        neighbor.left = owner_ID
-                case 't':
-                    square.top = owner_ID
-                    if (neighbor := self.get_square_by_ID(square_ID-self.__WIDTH)) != None:
-                        neighbor.down = owner_ID
-                case 'd':
-                    square.down = owner_ID
-                    if (neighbor := self.get_square_by_ID(square_ID+self.__WIDTH)) != None:
-                        neighbor.top = owner_ID
+        if (square := self.get_square_by_ID(square_ID)) is None:
+            return
+        match side:
+            case 'l':
+                square.left = owner_ID
+                if ((neighbor := self.get_square_by_ID(square_ID-1)) != None and square_ID%self.__WIDTH):
+                    neighbor.right = owner_ID
+            case 'r':
+                square.right = owner_ID
+                if ((neighbor := self.get_square_by_ID(square_ID+1)) != None and neighbor.ID%(self.__WIDTH)):
+                    neighbor.left = owner_ID
+            case 't':
+                square.top = owner_ID
+                if (neighbor := self.get_square_by_ID(square_ID-self.__WIDTH)) != None:
+                    neighbor.down = owner_ID
+            case 'd':
+                square.down = owner_ID
+                if (neighbor := self.get_square_by_ID(square_ID+self.__WIDTH)) != None:
+                    neighbor.top = owner_ID
 
     def get_side(self: Pipopipette, square_ID: int, side: str) ->  Segment|None:
         """Gets the owner of a side.

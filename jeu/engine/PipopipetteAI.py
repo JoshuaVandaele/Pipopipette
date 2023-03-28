@@ -44,8 +44,7 @@ class PipopipetteAI:
         Returns:
             tuple[None, None]|tuple[int, str]: Resulting square and side
         """
-        moves = [move for move in PipopipetteAI.__list_moves(gameplay)]
-        if moves:
+        if moves := list(PipopipetteAI.__list_moves(gameplay)):
             return choice(moves)
         else:
             return (None, None)
@@ -126,10 +125,7 @@ class PipopipetteAI:
         """
         opponent_score, ai_score = gameplay.get_score()
 
-        # Compute the evaluation score based on the above factors
-        score = (ai_score*2) - opponent_score
-
-        return score
+        return (ai_score*2) - opponent_score
 
     @staticmethod
     def get_next_state(gameplay: PipopipetteGameplay, square_id: int, side: str) -> 'PipopipetteGameplay':
@@ -148,6 +144,4 @@ class PipopipetteAI:
         new_gameplay.pipopipette.set_side(square_id, side, new_gameplay.current_player_ID)
         new_gameplay.next_player()
 
-        # Create a new game state object and switch the player
-        new_state = new_gameplay
-        return new_state
+        return new_gameplay

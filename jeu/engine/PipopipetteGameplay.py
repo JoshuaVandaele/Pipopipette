@@ -82,9 +82,8 @@ class PipopipetteGameplay():
 
         """
         total_score: int = sum(self.get_score())
-            
-        if total_score < self.pipopipette.HEIGHT * self.pipopipette.WIDTH: return False
-        return True
+
+        return total_score >= self.pipopipette.HEIGHT * self.pipopipette.WIDTH
         
     
     def copy(self):
