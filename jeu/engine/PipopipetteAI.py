@@ -1,8 +1,6 @@
 from random import choice
 from typing import Generator
 
-import numpy as np
-
 from jeu.engine.PipopipetteGameplay import PipopipetteGameplay
 
 
@@ -37,6 +35,20 @@ class PipopipetteAI:
                 if square.down.owner_ID == -1 and (square.ID not in checked_sides["d"]):
                     checked_sides["t"].append(square.ID+width)
                     yield square.ID, 'd'
+
+    @staticmethod
+    def move_random(gameplay: PipopipetteGameplay) -> tuple[None, None] | tuple[int, str]:
+        """Pick a random move for the AI to play
+        Args:
+            gameplay (PipopipetteGameplay): Game to play on
+        Returns:
+            tuple[None, None]|tuple[int, str]: Resulting square and side
+        """
+        moves = [move for move in PipopipetteAI.__list_moves(gameplay)]
+        if moves:
+            return choice(moves)
+        else:
+            return (None, None)
 
     @staticmethod
     def move_minmax(gameplay: PipopipetteGameplay, depth: int = 2) -> tuple[None, None] | tuple[int, str]:
