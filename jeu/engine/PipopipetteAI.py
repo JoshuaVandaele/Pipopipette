@@ -1,13 +1,14 @@
 from random import choice
 from typing import Generator
 
+import numpy as np
+
 from jeu.engine.PipopipetteGameplay import PipopipetteGameplay
 
 
 class PipopipetteAI:
     """Class which will be used to control the AI's logic.
     """
-
     @staticmethod
     def __list_moves(gameplay: PipopipetteGameplay) -> Generator[tuple[int, str], None, None]:
         """Iterator to go through the valid moves the player can go through
@@ -38,22 +39,6 @@ class PipopipetteAI:
                     yield square.ID, 'd'
 
     @staticmethod
-    def move_random(gameplay: PipopipetteGameplay) -> tuple[None, None] | tuple[int, str]:
-        """Pick a random move for the AI to play
-
-        Args:
-            gameplay (PipopipetteGameplay): Game to play on
-
-        Returns:
-            tuple[None, None]|tuple[int, str]: Resulting square and side
-        """
-        moves = [move for move in PipopipetteAI.__list_moves(gameplay)]
-        if moves:
-            return choice(moves)
-        else:
-            return (None, None)
-
-    @staticmethod
     def move_minmax(gameplay: PipopipetteGameplay, depth: int = 2) -> tuple[None, None] | tuple[int, str]:
         """Pick a move for the AI to play by simulating the next moves
 
@@ -64,23 +49,35 @@ class PipopipetteAI:
         Returns:
             tuple[None, None]|tuple[int, str]: Resulting square and side
         """
+        memo = {}
+
         def max_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -> float:
+            key = (gameplay.pipopipette, depth, "max")
+            if key in memo:
+                return memo[key]
+
             if depth == 0 or gameplay.game_over():
-                return PipopipetteAI.evaluate(gameplay)
+                memo[key] = PipopipetteAI.evaluate(gameplay)
+                return memo[key]
 
             value = float('-inf')
             for move in PipopipetteAI.__list_moves(gameplay):
                 next_state = PipopipetteAI.get_next_state(gameplay, *move)
-                value = max(value, min_value(
-                    next_state, depth - 1, alpha, beta))
+                value = max(value, min_value(next_state, depth - 1, alpha, beta))
                 alpha = max(alpha, value)
                 if alpha >= beta:
                     break
+            memo[key] = value
             return value
 
         def min_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -> float:
+            key = (gameplay.pipopipette, depth, "min")
+            if key in memo:
+                return memo[key]
+
             if depth == 0 or gameplay.game_over():
-                return PipopipetteAI.evaluate(gameplay)
+                memo[key] = PipopipetteAI.evaluate(gameplay)
+                return memo[key]
 
             value = float('inf')
             for move in PipopipetteAI.__list_moves(gameplay):
@@ -89,6 +86,7 @@ class PipopipetteAI:
                 beta = min(beta, value)
                 if alpha >= beta:
                     break
+            memo[key] = value
             return value
 
         best_move = (None, None)
