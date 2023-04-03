@@ -94,6 +94,11 @@ class PipopipetteGameplay():
             self.__pipopipette.set_side(square_ID, side, self.current_player_ID)
     
     def get_score(self: PipopipetteGameplay) -&gt; list[int]:
+        &#34;&#34;&#34;Returns the current score of all players in a list
+
+        Returns:
+            list[int]: Scores ordered in a list
+        &#34;&#34;&#34;
         result: list[int] = [0]*len(self.__LIST_PLAYER)
         for square in self.__pipopipette.list_square:
             if square.square_owner &gt;= 0:
@@ -112,11 +117,20 @@ class PipopipetteGameplay():
         total_score: int = sum(self.get_score())
 
         return total_score &gt;= self.pipopipette.HEIGHT * self.pipopipette.WIDTH
-        
-    
-    def copy(self):
+
+    def game_state_string(self) -&gt; str:
+        &#34;&#34;&#34;Current state of the game in a stringified version. Useful for hashing
+
+        Returns:
+            str: Stringified state of the game
         &#34;&#34;&#34;
-        Returns a deep copy of this PipopipetteGameplay instance.
+        return &#39;&#39;.join(str(square.square_owner) for square in self.pipopipette.list_square)
+    
+    def copy(self) -&gt; PipopipetteGameplay:
+        &#34;&#34;&#34;Returns a deep copy of this PipopipetteGameplay instance.
+
+        Returns:
+            PipopipetteGameplay: Copied instance
         &#34;&#34;&#34;
         new_gameplay = PipopipetteGameplay([], pipopipette=self.__pipopipette.copy())
         new_gameplay.__current_player_ID = self.__current_player_ID
@@ -215,6 +229,11 @@ class PipopipetteGameplay():
             self.__pipopipette.set_side(square_ID, side, self.current_player_ID)
     
     def get_score(self: PipopipetteGameplay) -&gt; list[int]:
+        &#34;&#34;&#34;Returns the current score of all players in a list
+
+        Returns:
+            list[int]: Scores ordered in a list
+        &#34;&#34;&#34;
         result: list[int] = [0]*len(self.__LIST_PLAYER)
         for square in self.__pipopipette.list_square:
             if square.square_owner &gt;= 0:
@@ -233,11 +252,20 @@ class PipopipetteGameplay():
         total_score: int = sum(self.get_score())
 
         return total_score &gt;= self.pipopipette.HEIGHT * self.pipopipette.WIDTH
-        
-    
-    def copy(self):
+
+    def game_state_string(self) -&gt; str:
+        &#34;&#34;&#34;Current state of the game in a stringified version. Useful for hashing
+
+        Returns:
+            str: Stringified state of the game
         &#34;&#34;&#34;
-        Returns a deep copy of this PipopipetteGameplay instance.
+        return &#39;&#39;.join(str(square.square_owner) for square in self.pipopipette.list_square)
+    
+    def copy(self) -&gt; PipopipetteGameplay:
+        &#34;&#34;&#34;Returns a deep copy of this PipopipetteGameplay instance.
+
+        Returns:
+            PipopipetteGameplay: Copied instance
         &#34;&#34;&#34;
         new_gameplay = PipopipetteGameplay([], pipopipette=self.__pipopipette.copy())
         new_gameplay.__current_player_ID = self.__current_player_ID
@@ -289,17 +317,24 @@ def pipopipette(self: PipopipetteGameplay) -&gt; Pipopipette: return self.__pipo
 <h3>Methods</h3>
 <dl>
 <dt id="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.copy"><code class="name flex">
-<span>def <span class="ident">copy</span></span>(<span>self)</span>
+<span>def <span class="ident">copy</span></span>(<span>self) ‑> <a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay" href="#jeu.engine.PipopipetteGameplay.PipopipetteGameplay">PipopipetteGameplay</a></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns a deep copy of this PipopipetteGameplay instance.</p></div>
+<div class="desc"><p>Returns a deep copy of this PipopipetteGameplay instance.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay" href="#jeu.engine.PipopipetteGameplay.PipopipetteGameplay">PipopipetteGameplay</a></code></dt>
+<dd>Copied instance</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def copy(self):
-    &#34;&#34;&#34;
-    Returns a deep copy of this PipopipetteGameplay instance.
+<pre><code class="python">def copy(self) -&gt; PipopipetteGameplay:
+    &#34;&#34;&#34;Returns a deep copy of this PipopipetteGameplay instance.
+
+    Returns:
+        PipopipetteGameplay: Copied instance
     &#34;&#34;&#34;
     new_gameplay = PipopipetteGameplay([], pipopipette=self.__pipopipette.copy())
     new_gameplay.__current_player_ID = self.__current_player_ID
@@ -336,16 +371,49 @@ def pipopipette(self: PipopipetteGameplay) -&gt; Pipopipette: return self.__pipo
     return total_score &gt;= self.pipopipette.HEIGHT * self.pipopipette.WIDTH</code></pre>
 </details>
 </dd>
+<dt id="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.game_state_string"><code class="name flex">
+<span>def <span class="ident">game_state_string</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Current state of the game in a stringified version. Useful for hashing</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Stringified state of the game</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def game_state_string(self) -&gt; str:
+    &#34;&#34;&#34;Current state of the game in a stringified version. Useful for hashing
+
+    Returns:
+        str: Stringified state of the game
+    &#34;&#34;&#34;
+    return &#39;&#39;.join(str(square.square_owner) for square in self.pipopipette.list_square)</code></pre>
+</details>
+</dd>
 <dt id="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.get_score"><code class="name flex">
 <span>def <span class="ident">get_score</span></span>(<span>self: <a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay" href="#jeu.engine.PipopipetteGameplay.PipopipetteGameplay">PipopipetteGameplay</a>) ‑> list[int]</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns the current score of all players in a list</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list[int]</code></dt>
+<dd>Scores ordered in a list</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_score(self: PipopipetteGameplay) -&gt; list[int]:
+    &#34;&#34;&#34;Returns the current score of all players in a list
+
+    Returns:
+        list[int]: Scores ordered in a list
+    &#34;&#34;&#34;
     result: list[int] = [0]*len(self.__LIST_PLAYER)
     for square in self.__pipopipette.list_square:
         if square.square_owner &gt;= 0:
@@ -422,6 +490,7 @@ def pipopipette(self: PipopipetteGameplay) -&gt; Pipopipette: return self.__pipo
 <li><code><a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.copy" href="#jeu.engine.PipopipetteGameplay.PipopipetteGameplay.copy">copy</a></code></li>
 <li><code><a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.current_player_ID" href="#jeu.engine.PipopipetteGameplay.PipopipetteGameplay.current_player_ID">current_player_ID</a></code></li>
 <li><code><a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.game_over" href="#jeu.engine.PipopipetteGameplay.PipopipetteGameplay.game_over">game_over</a></code></li>
+<li><code><a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.game_state_string" href="#jeu.engine.PipopipetteGameplay.PipopipetteGameplay.game_state_string">game_state_string</a></code></li>
 <li><code><a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.get_score" href="#jeu.engine.PipopipetteGameplay.PipopipetteGameplay.get_score">get_score</a></code></li>
 <li><code><a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.next_player" href="#jeu.engine.PipopipetteGameplay.PipopipetteGameplay.next_player">next_player</a></code></li>
 <li><code><a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.pipopipette" href="#jeu.engine.PipopipetteGameplay.PipopipetteGameplay.pipopipette">pipopipette</a></code></li>

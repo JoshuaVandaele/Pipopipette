@@ -46,23 +46,28 @@ class PipopipetteAI:
             Generator[tuple[int, str], None, None]: Generator
         &#34;&#34;&#34;
         # List of checked sides: dict[side, list[square_id]]
-        checked_sides: dict[str, list[int]] = {&#39;l&#39;: [], &#39;r&#39;: [], &#39;t&#39;: [], &#39;d&#39;: []}
-        width: int = gameplay.pipopipette.WIDTH
-        
+        checked_sides: dict[str, set[int]] = {&#39;l&#39;: set(), &#39;r&#39;: set(), &#39;t&#39;: set(), &#39;d&#39;: set()}
+        width: int = 10
+
         for square in gameplay.pipopipette.list_square:
             if square.square_owner == -1:
-                if square.left.owner_ID == -1 and (square.ID not in checked_sides[&#34;l&#34;]):
-                    checked_sides[&#34;r&#34;].append(square.ID-1)
-                    yield square.ID, &#39;l&#39;
-                if square.top.owner_ID == -1 and (square.ID not in checked_sides[&#34;t&#34;]):
-                    checked_sides[&#34;d&#34;].append(square.ID-width)
-                    yield square.ID, &#39;t&#39;
-                if square.right.owner_ID == -1 and (square.ID not in checked_sides[&#34;r&#34;]):
-                    checked_sides[&#34;l&#34;].append(square.ID+1)
-                    yield square.ID, &#39;r&#39;
-                if square.down.owner_ID == -1 and (square.ID not in checked_sides[&#34;d&#34;]):
-                    checked_sides[&#34;t&#34;].append(square.ID+width)
-                    yield square.ID, &#39;d&#39;
+                square_id = square.ID
+
+                if square.left.owner_ID == -1 and square_id not in checked_sides[&#34;l&#34;]:
+                    checked_sides[&#34;r&#34;].add(square_id - 1)
+                    yield square_id, &#39;l&#39;
+
+                if square.top.owner_ID == -1 and square_id not in checked_sides[&#34;t&#34;]:
+                    checked_sides[&#34;d&#34;].add(square_id - width)
+                    yield square_id, &#39;t&#39;
+
+                if square.right.owner_ID == -1 and square_id not in checked_sides[&#34;r&#34;]:
+                    checked_sides[&#34;l&#34;].add(square_id + 1)
+                    yield square_id, &#39;r&#39;
+
+                if square.down.owner_ID == -1 and square_id not in checked_sides[&#34;d&#34;]:
+                    checked_sides[&#34;t&#34;].add(square_id + width)
+                    yield square_id, &#39;d&#39;
 
     @staticmethod
     def move_random(gameplay: PipopipetteGameplay) -&gt; tuple[None, None] | tuple[int, str]:
@@ -91,7 +96,19 @@ class PipopipetteAI:
         memo = {}
 
         def max_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -&gt; float:
-            key = (gameplay.pipopipette, depth, &#34;max&#34;)
+            &#34;&#34;&#34;
+            Calculate the maximum value of the game state for the AI player using the minimax algorithm with alpha-beta pruning
+            
+            Args:
+                gameplay (PipopipetteGameplay): The current game state.
+                depth (int): The remaining depth of the search tree.
+                alpha (float): The best value found so far for the AI player (maximizing player) during the search.
+                beta (float): The best value found so far for the opponent (minimizing player) during the search.
+
+            Returns:
+                float: The maximum value of the game state for the AI player.
+            &#34;&#34;&#34;
+            key = (gameplay.game_state_string(), depth, &#34;max&#34;)
             if key in memo:
                 return memo[key]
 
@@ -110,7 +127,19 @@ class PipopipetteAI:
             return value
 
         def min_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -&gt; float:
-            key = (gameplay.pipopipette, depth, &#34;min&#34;)
+            &#34;&#34;&#34;
+            Calculate the minimum value of the game state for the opponent player using the minimax algorithm with alpha-beta pruning.
+            
+            Args:
+                gameplay (PipopipetteGameplay): The current game state.
+                depth (int): The remaining depth of the search tree.
+                alpha (float): The best value found so far for the AI player (maximizing player) during the search.
+                beta (float): The best value found so far for the opponent (minimizing player) during the search.
+
+            Returns:
+                float: The minimum value of the game state for the opponent player.
+            &#34;&#34;&#34;
+            key = (gameplay.game_state_string(), depth, &#34;min&#34;)
             if key in memo:
                 return memo[key]
 
@@ -207,23 +236,28 @@ class PipopipetteAI:
             Generator[tuple[int, str], None, None]: Generator
         &#34;&#34;&#34;
         # List of checked sides: dict[side, list[square_id]]
-        checked_sides: dict[str, list[int]] = {&#39;l&#39;: [], &#39;r&#39;: [], &#39;t&#39;: [], &#39;d&#39;: []}
-        width: int = gameplay.pipopipette.WIDTH
-        
+        checked_sides: dict[str, set[int]] = {&#39;l&#39;: set(), &#39;r&#39;: set(), &#39;t&#39;: set(), &#39;d&#39;: set()}
+        width: int = 10
+
         for square in gameplay.pipopipette.list_square:
             if square.square_owner == -1:
-                if square.left.owner_ID == -1 and (square.ID not in checked_sides[&#34;l&#34;]):
-                    checked_sides[&#34;r&#34;].append(square.ID-1)
-                    yield square.ID, &#39;l&#39;
-                if square.top.owner_ID == -1 and (square.ID not in checked_sides[&#34;t&#34;]):
-                    checked_sides[&#34;d&#34;].append(square.ID-width)
-                    yield square.ID, &#39;t&#39;
-                if square.right.owner_ID == -1 and (square.ID not in checked_sides[&#34;r&#34;]):
-                    checked_sides[&#34;l&#34;].append(square.ID+1)
-                    yield square.ID, &#39;r&#39;
-                if square.down.owner_ID == -1 and (square.ID not in checked_sides[&#34;d&#34;]):
-                    checked_sides[&#34;t&#34;].append(square.ID+width)
-                    yield square.ID, &#39;d&#39;
+                square_id = square.ID
+
+                if square.left.owner_ID == -1 and square_id not in checked_sides[&#34;l&#34;]:
+                    checked_sides[&#34;r&#34;].add(square_id - 1)
+                    yield square_id, &#39;l&#39;
+
+                if square.top.owner_ID == -1 and square_id not in checked_sides[&#34;t&#34;]:
+                    checked_sides[&#34;d&#34;].add(square_id - width)
+                    yield square_id, &#39;t&#39;
+
+                if square.right.owner_ID == -1 and square_id not in checked_sides[&#34;r&#34;]:
+                    checked_sides[&#34;l&#34;].add(square_id + 1)
+                    yield square_id, &#39;r&#39;
+
+                if square.down.owner_ID == -1 and square_id not in checked_sides[&#34;d&#34;]:
+                    checked_sides[&#34;t&#34;].add(square_id + width)
+                    yield square_id, &#39;d&#39;
 
     @staticmethod
     def move_random(gameplay: PipopipetteGameplay) -&gt; tuple[None, None] | tuple[int, str]:
@@ -252,7 +286,19 @@ class PipopipetteAI:
         memo = {}
 
         def max_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -&gt; float:
-            key = (gameplay.pipopipette, depth, &#34;max&#34;)
+            &#34;&#34;&#34;
+            Calculate the maximum value of the game state for the AI player using the minimax algorithm with alpha-beta pruning
+            
+            Args:
+                gameplay (PipopipetteGameplay): The current game state.
+                depth (int): The remaining depth of the search tree.
+                alpha (float): The best value found so far for the AI player (maximizing player) during the search.
+                beta (float): The best value found so far for the opponent (minimizing player) during the search.
+
+            Returns:
+                float: The maximum value of the game state for the AI player.
+            &#34;&#34;&#34;
+            key = (gameplay.game_state_string(), depth, &#34;max&#34;)
             if key in memo:
                 return memo[key]
 
@@ -271,7 +317,19 @@ class PipopipetteAI:
             return value
 
         def min_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -&gt; float:
-            key = (gameplay.pipopipette, depth, &#34;min&#34;)
+            &#34;&#34;&#34;
+            Calculate the minimum value of the game state for the opponent player using the minimax algorithm with alpha-beta pruning.
+            
+            Args:
+                gameplay (PipopipetteGameplay): The current game state.
+                depth (int): The remaining depth of the search tree.
+                alpha (float): The best value found so far for the AI player (maximizing player) during the search.
+                beta (float): The best value found so far for the opponent (minimizing player) during the search.
+
+            Returns:
+                float: The minimum value of the game state for the opponent player.
+            &#34;&#34;&#34;
+            key = (gameplay.game_state_string(), depth, &#34;min&#34;)
             if key in memo:
                 return memo[key]
 
@@ -444,7 +502,19 @@ def move_minmax(gameplay: PipopipetteGameplay, depth: int = 2) -&gt; tuple[None,
     memo = {}
 
     def max_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -&gt; float:
-        key = (gameplay.pipopipette, depth, &#34;max&#34;)
+        &#34;&#34;&#34;
+        Calculate the maximum value of the game state for the AI player using the minimax algorithm with alpha-beta pruning
+        
+        Args:
+            gameplay (PipopipetteGameplay): The current game state.
+            depth (int): The remaining depth of the search tree.
+            alpha (float): The best value found so far for the AI player (maximizing player) during the search.
+            beta (float): The best value found so far for the opponent (minimizing player) during the search.
+
+        Returns:
+            float: The maximum value of the game state for the AI player.
+        &#34;&#34;&#34;
+        key = (gameplay.game_state_string(), depth, &#34;max&#34;)
         if key in memo:
             return memo[key]
 
@@ -463,7 +533,19 @@ def move_minmax(gameplay: PipopipetteGameplay, depth: int = 2) -&gt; tuple[None,
         return value
 
     def min_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -&gt; float:
-        key = (gameplay.pipopipette, depth, &#34;min&#34;)
+        &#34;&#34;&#34;
+        Calculate the minimum value of the game state for the opponent player using the minimax algorithm with alpha-beta pruning.
+        
+        Args:
+            gameplay (PipopipetteGameplay): The current game state.
+            depth (int): The remaining depth of the search tree.
+            alpha (float): The best value found so far for the AI player (maximizing player) during the search.
+            beta (float): The best value found so far for the opponent (minimizing player) during the search.
+
+        Returns:
+            float: The minimum value of the game state for the opponent player.
+        &#34;&#34;&#34;
+        key = (gameplay.game_state_string(), depth, &#34;min&#34;)
         if key in memo:
             return memo[key]
 

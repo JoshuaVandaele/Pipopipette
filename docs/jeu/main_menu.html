@@ -92,7 +92,12 @@ def main_menu(screen: pygame.surface.Surface):
         )
         
         def play(size: tuple[int, int]):
-            
+            &#34;&#34;&#34;
+            Display the game mode selection popup and start the game with the chosen mode and board size.
+
+            Args:
+                size (tuple[int, int]): The desired board size as a tuple of width and height.
+            &#34;&#34;&#34;
             gamemode_popup = Popup(
                 screen=screen,
                 title=&#34;Game mode&#34;,
@@ -103,6 +108,12 @@ def main_menu(screen: pygame.surface.Surface):
             mode: gamemode
             
             def change_gamemode(new_mode: gamemode):
+                &#34;&#34;&#34;
+                Update the game mode and close the game mode selection popup.
+
+                Args:
+                    new_mode (gamemode): The new game mode to be set (e.g., LOCAL, AI, or ONLINE).
+                &#34;&#34;&#34;
                 nonlocal mode
                 mode = new_mode
                 gamemode_popup.close()
@@ -427,7 +438,12 @@ def main_menu(screen: pygame.surface.Surface):
         )
         
         def play(size: tuple[int, int]):
-            
+            &#34;&#34;&#34;
+            Display the game mode selection popup and start the game with the chosen mode and board size.
+
+            Args:
+                size (tuple[int, int]): The desired board size as a tuple of width and height.
+            &#34;&#34;&#34;
             gamemode_popup = Popup(
                 screen=screen,
                 title=&#34;Game mode&#34;,
@@ -438,6 +454,12 @@ def main_menu(screen: pygame.surface.Surface):
             mode: gamemode
             
             def change_gamemode(new_mode: gamemode):
+                &#34;&#34;&#34;
+                Update the game mode and close the game mode selection popup.
+
+                Args:
+                    new_mode (gamemode): The new game mode to be set (e.g., LOCAL, AI, or ONLINE).
+                &#34;&#34;&#34;
                 nonlocal mode
                 mode = new_mode
                 gamemode_popup.close()

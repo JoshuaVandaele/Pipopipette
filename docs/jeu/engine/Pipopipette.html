@@ -167,7 +167,12 @@ class Pipopipette():
                     return square.down.owner_ID == -1
         return False
 
-    def copy(self):
+    def copy(self) -&gt; Pipopipette:
+        &#34;&#34;&#34;Returns a deep copy of this Pipopipette instance.
+
+        Returns:
+            Pipopipette: Copied instance
+        &#34;&#34;&#34;
         copied_instance = Pipopipette(self.__WIDTH, self.__HEIGHT)
         copied_instance.list_square = [square.copy() for square in self.list_square]
         return copied_instance</code></pre>
@@ -327,7 +332,12 @@ class Pipopipette():
                     return square.down.owner_ID == -1
         return False
 
-    def copy(self):
+    def copy(self) -&gt; Pipopipette:
+        &#34;&#34;&#34;Returns a deep copy of this Pipopipette instance.
+
+        Returns:
+            Pipopipette: Copied instance
+        &#34;&#34;&#34;
         copied_instance = Pipopipette(self.__WIDTH, self.__HEIGHT)
         copied_instance.list_square = [square.copy() for square in self.list_square]
         return copied_instance</code></pre>
@@ -371,15 +381,25 @@ def list_square(self: Pipopipette) -&gt; list[Square]: return self.__list_square
 <h3>Methods</h3>
 <dl>
 <dt id="jeu.engine.Pipopipette.Pipopipette.copy"><code class="name flex">
-<span>def <span class="ident">copy</span></span>(<span>self)</span>
+<span>def <span class="ident">copy</span></span>(<span>self) ‑> <a title="jeu.engine.Pipopipette.Pipopipette" href="#jeu.engine.Pipopipette.Pipopipette">Pipopipette</a></span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns a deep copy of this Pipopipette instance.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="jeu.engine.Pipopipette.Pipopipette" href="#jeu.engine.Pipopipette.Pipopipette">Pipopipette</a></code></dt>
+<dd>Copied instance</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def copy(self):
+<pre><code class="python">def copy(self) -&gt; Pipopipette:
+    &#34;&#34;&#34;Returns a deep copy of this Pipopipette instance.
+
+    Returns:
+        Pipopipette: Copied instance
+    &#34;&#34;&#34;
     copied_instance = Pipopipette(self.__WIDTH, self.__HEIGHT)
     copied_instance.list_square = [square.copy() for square in self.list_square]
     return copied_instance</code></pre>
