@@ -1,5 +1,6 @@
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 import pygame
@@ -22,11 +23,13 @@ PLAYER1_COLOR = "blue"
 PLAYER2_COLOR = "red"
 PLAYER_COLORS = (PLAYER1_COLOR, PLAYER2_COLOR)
 PLAYER_COUNT = 2
+EXECUTOR = ThreadPoolExecutor(max_workers=2)
 
 
 def quit():
     """Quits the program
     """
+    EXECUTOR.shutdown(wait=True)
     pygame.quit()
     sys.exit()
 
@@ -210,6 +213,8 @@ def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] =
             new_score: list[int] = gameplay.get_score()
             if old_score[gameplay.current_player_ID] >= new_score[gameplay.current_player_ID]:
                 gameplay.next_player()
+                if "timer" in config and config["timer"] > 0:
+                    start_time_in_seconds = time.time()
                 match mode:
                     case gamemode.AI:
                         old_score = []
@@ -285,7 +290,7 @@ def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] =
                             side = 'd'
                             square_id = square_id-size[0]
 
-                        segment_handler(square_id, side)
+                        EXECUTOR.submit(segment_handler, square_id, side)
                     # Create a vertical segment
                     x_segment: Button = Button(
                         screen=screen,
@@ -332,7 +337,7 @@ def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] =
                             side = "r"
                         square_id = newi+size[0]*j
 
-                        segment_handler(square_id, side)
+                        EXECUTOR.submit(segment_handler, square_id, side)
 
                     # Creates a horizontal segment
                     y_segment: Button = Button(
@@ -350,19 +355,34 @@ def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] =
                     board_elements.append(y_segment)
         return board_elements, fillers
 
+    def player_can_interact() -> bool:
+            return (
+                (gameplay.current_player_ID == 0 and mode in [gamemode.AI, gamemode.ONLINE])
+                or mode == gamemode.LOCAL
+            )
+
     board_elements, fillers = update_board()
     end_update_counter: int = 0
+    animation_frame_counter: int = 0
     end_flag = 0
     # Game loop
     while True:
+        animation_frame_counter += 1
+        can_interact: bool = player_can_interact()
         # Update the relevant elements only once the game has started
         if started:
             score: list[int] = gameplay.get_score()
             board_elements, fillers = update_board()
-            labels["timer"] = get_stopwatch_label(start_time_in_seconds, game_font)
+            if can_interact:
+                labels["timer"] = get_stopwatch_label(start_time_in_seconds, game_font)
+            else:
+                text = game_font.get_font(75).render("Waiting for opponent" + "."*(animation_frame_counter%3+1) + " "*(3-animation_frame_counter%3+1), True, "#EEEEEE")
+                rect = text.get_rect(center=(640, 45))
+                labels["timer"] = (text, rect)
             labels["player1_score"] = get_score_label(score[0], game_font, True)
             labels["player2_score"] = get_score_label(score[1], game_font, False)
             if (
+                can_interact and
                 "timer" in config
                 and config["timer"] > 0
                 and (time.time() - start_time_in_seconds > config["timer"])
@@ -380,8 +400,9 @@ def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] =
 
         for event in pygame.event.get():
             # Send all events to the UI elements
-            for element in board_elements:
-                element.update(event)
+            if can_interact:
+                for element in board_elements:
+                    element.update(event)
             match (event.type):
                 case pygame.QUIT:
                     quit()
