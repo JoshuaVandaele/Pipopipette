@@ -83,7 +83,7 @@ def main_menu(screen: pygame.surface.Surface):
             gammode_popup_local_button = Button(
                 screen=gamemode_popup.surface,
                 image=None,
-                position=(gamemode_popup.surface.get_size()[0]//2*0.5, gamemode_popup.surface.get_size()[1]//2),
+                position=(gamemode_popup.surface.get_size()[0]//2*0.5, gamemode_popup.surface.get_size()[1]//1.6),
                 text="LOCAL",
                 font=menu_font.get_font(56),
                 color="white",
@@ -94,7 +94,7 @@ def main_menu(screen: pygame.surface.Surface):
             gammode_popup_ai_button = Button(
                 screen=gamemode_popup.surface,
                 image=None,
-                position=(gamemode_popup.surface.get_size()[0]//2*1, gamemode_popup.surface.get_size()[1]//2),
+                position=(gamemode_popup.surface.get_size()[0]//2*1, gamemode_popup.surface.get_size()[1]//1.6),
                 text="AI",
                 font=menu_font.get_font(56),
                 color="white",
@@ -105,7 +105,7 @@ def main_menu(screen: pygame.surface.Surface):
             gammode_popup_online_button = Button(
                 screen=gamemode_popup.surface,
                 image=None,
-                position=(gamemode_popup.surface.get_size()[0]//2*1.5, gamemode_popup.surface.get_size()[1]//2),
+                position=(gamemode_popup.surface.get_size()[0]//2*1.5, gamemode_popup.surface.get_size()[1]//1.6),
                 text="ONLINE",
                 font=menu_font.get_font(56),
                 color="white",
