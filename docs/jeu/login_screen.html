@@ -52,25 +52,20 @@ def login_screen(screen: pygame.surface.Surface):
         &#34;&#34;&#34;
         print(f&#34;Login attempt from &#39;{username_textbox.text}&#39;&#34;)
         player = SaveSystem.load_player(username_textbox.text, password_textbox.text) # Contain a Player or None
-        if(player):
+        if player:
             print(f&#34;{username_textbox.text} logged in!&#34;)
             # Send this player to game
             login_popup.active = False
         else:
             print(f&#34;{username_textbox.text} failed to log in!&#34;)
-            # Error : Wrong login/password
-            pass
 
     def register_handler():
         &#34;&#34;&#34;Action ran when the register button is clicked
         &#34;&#34;&#34;
         print(f&#34;Register! User:&#39;{username_textbox.text}&#39;, Password:&#39;{password_textbox.text}&#39;&#34;)
-        if(not SaveSystem.is_login_already_taken(username_textbox.text)):
-         SaveSystem.create_user(username_textbox.text, password_textbox.text, SaveSystem.get_first_available_ID())
-         login_popup.active = False
-        else:
-            # Error : Login already registered !
-            pass
+        if (not SaveSystem.is_login_already_taken(username_textbox.text)):
+            SaveSystem.create_user(username_textbox.text, password_textbox.text, SaveSystem.get_first_available_ID())
+            login_popup.active = False
 
     # Create a textbox for the username
     username_textbox = Textbox(
@@ -158,25 +153,20 @@ def login_screen(screen: pygame.surface.Surface):
         &#34;&#34;&#34;
         print(f&#34;Login attempt from &#39;{username_textbox.text}&#39;&#34;)
         player = SaveSystem.load_player(username_textbox.text, password_textbox.text) # Contain a Player or None
-        if(player):
+        if player:
             print(f&#34;{username_textbox.text} logged in!&#34;)
             # Send this player to game
             login_popup.active = False
         else:
             print(f&#34;{username_textbox.text} failed to log in!&#34;)
-            # Error : Wrong login/password
-            pass
 
     def register_handler():
         &#34;&#34;&#34;Action ran when the register button is clicked
         &#34;&#34;&#34;
         print(f&#34;Register! User:&#39;{username_textbox.text}&#39;, Password:&#39;{password_textbox.text}&#39;&#34;)
-        if(not SaveSystem.is_login_already_taken(username_textbox.text)):
-         SaveSystem.create_user(username_textbox.text, password_textbox.text, SaveSystem.get_first_available_ID())
-         login_popup.active = False
-        else:
-            # Error : Login already registered !
-            pass
+        if (not SaveSystem.is_login_already_taken(username_textbox.text)):
+            SaveSystem.create_user(username_textbox.text, password_textbox.text, SaveSystem.get_first_available_ID())
+            login_popup.active = False
 
     # Create a textbox for the username
     username_textbox = Textbox(

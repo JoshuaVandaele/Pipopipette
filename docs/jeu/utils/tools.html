@@ -28,6 +28,7 @@
 </summary>
 <pre><code class="python">import tkinter
 import tkinter.filedialog
+from enum import Enum, IntEnum
 
 
 def prompt_for_file(file_kind: str, extensions: list[str]) -&gt; str:
@@ -44,7 +45,12 @@ def prompt_for_file(file_kind: str, extensions: list[str]) -&gt; str:
     top.withdraw()
     file_name = tkinter.filedialog.askopenfilename(filetypes=[(file_kind, &#39; &#39;.join(extensions))])
     top.destroy()
-    return file_name</code></pre>
+    return file_name
+
+class gamemode(IntEnum):
+    LOCAL = 0
+    AI = 1
+    ONLINE = 2</code></pre>
 </details>
 </section>
 <section>
@@ -95,6 +101,46 @@ def prompt_for_file(file_kind: str, extensions: list[str]) -&gt; str:
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="jeu.utils.tools.gamemode"><code class="flex name class">
+<span>class <span class="ident">gamemode</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class gamemode(IntEnum):
+    LOCAL = 0
+    AI = 1
+    ONLINE = 2</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="jeu.utils.tools.gamemode.AI"><code class="name">var <span class="ident">AI</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="jeu.utils.tools.gamemode.LOCAL"><code class="name">var <span class="ident">LOCAL</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="jeu.utils.tools.gamemode.ONLINE"><code class="name">var <span class="ident">ONLINE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -111,6 +157,18 @@ def prompt_for_file(file_kind: str, extensions: list[str]) -&gt; str:
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="jeu.utils.tools.prompt_for_file" href="#jeu.utils.tools.prompt_for_file">prompt_for_file</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="jeu.utils.tools.gamemode" href="#jeu.utils.tools.gamemode">gamemode</a></code></h4>
+<ul class="">
+<li><code><a title="jeu.utils.tools.gamemode.AI" href="#jeu.utils.tools.gamemode.AI">AI</a></code></li>
+<li><code><a title="jeu.utils.tools.gamemode.LOCAL" href="#jeu.utils.tools.gamemode.LOCAL">LOCAL</a></code></li>
+<li><code><a title="jeu.utils.tools.gamemode.ONLINE" href="#jeu.utils.tools.gamemode.ONLINE">ONLINE</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

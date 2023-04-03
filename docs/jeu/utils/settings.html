@@ -32,8 +32,8 @@ from time import time
 
 from pathlib import Path
 
-SAVE_FOLDER_PATH = str(Path.home()) + &#34;/Pipopipette&#34;
-SAVE_FILE_PATH = SAVE_FOLDER_PATH + &#34;/settings.json&#34;
+SAVE_FOLDER_PATH = f&#34;{str(Path.home())}/Pipopipette&#34;
+SAVE_FILE_PATH = f&#34;{SAVE_FOLDER_PATH}/settings.json&#34;
 
 DEFAULT_SETTINGS = {
     &#34;timer&#34;: 60
@@ -48,15 +48,16 @@ def integrity_check(settings: dict[str, Any]) -&gt; dict[str, Any]:
     Returns:
         dict[str, Any]: Settings with checked integrity
     &#34;&#34;&#34;
-    for setting_name, setting_value in settings.items():
+    for setting_name in settings:
         if setting_name not in DEFAULT_SETTINGS:
             settings.pop(setting_name)
 
-    if &#34;timer&#34; in settings:
-        if  (type(settings[&#34;timer&#34;]) != int
-            ) or (settings[&#34;timer&#34;] &lt; 0
-        ):
-            settings.pop(&#34;timer&#34;)
+    if (
+        &#34;timer&#34; in settings
+        and (type(settings[&#34;timer&#34;]) != int)
+        or (settings[&#34;timer&#34;] &lt; 0)
+    ):
+        settings.pop(&#34;timer&#34;)
     return settings
 
 def __ensure_exists():
@@ -70,7 +71,7 @@ def __ensure_exists():
             f.write(&#34;{}&#34;)
 
     # Try and read the save file to see if it&#39;s corrupted,
-    # if it is, make a backup of the old one and create a new one 
+    # if it is, make a backup of the old one and create a new one
     with open(SAVE_FILE_PATH) as json_file:
         try:
             json.load(json_file)
@@ -78,7 +79,7 @@ def __ensure_exists():
             print(&#34;The settings file is corrupted! Creating a new one..&#34;)
             print(f&#34;(Error: {e})&#34;)
             corrupted_file = Path(SAVE_FOLDER_PATH)
-            corrupted_file.rename(Path(SAVE_FOLDER_PATH+f&#34;/{time()}.json&#34;))
+            corrupted_file.rename(Path(f&#34;{SAVE_FOLDER_PATH}/{time()}.json&#34;))
             with open(SAVE_FILE_PATH, &#39;w&#39;) as f:
                 f.write(&#34;{}&#34;)
 
@@ -174,15 +175,16 @@ def get_settings() -&gt; dict[str, Any]:
     Returns:
         dict[str, Any]: Settings with checked integrity
     &#34;&#34;&#34;
-    for setting_name, setting_value in settings.items():
+    for setting_name in settings:
         if setting_name not in DEFAULT_SETTINGS:
             settings.pop(setting_name)
 
-    if &#34;timer&#34; in settings:
-        if  (type(settings[&#34;timer&#34;]) != int
-            ) or (settings[&#34;timer&#34;] &lt; 0
-        ):
-            settings.pop(&#34;timer&#34;)
+    if (
+        &#34;timer&#34; in settings
+        and (type(settings[&#34;timer&#34;]) != int)
+        or (settings[&#34;timer&#34;] &lt; 0)
+    ):
+        settings.pop(&#34;timer&#34;)
     return settings</code></pre>
 </details>
 </dd>

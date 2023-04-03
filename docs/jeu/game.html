@@ -33,6 +33,7 @@ from typing import Any
 import pygame
 
 from jeu.engine.Pipopipette import Pipopipette
+from jeu.engine.PipopipetteAI import PipopipetteAI
 from jeu.engine.PipopipetteGameplay import PipopipetteGameplay
 from jeu.ui.button import Button
 from jeu.ui.popup import Popup
@@ -40,7 +41,7 @@ from jeu.ui.ui import UI
 from jeu.utils.assets_import import resource_path
 from jeu.utils.font_manager import FontManager
 from jeu.utils.settings import DEFAULT_SETTINGS
-from jeu.engine.PipopipetteAI import PipopipetteAI
+from jeu.utils.tools import gamemode
 
 LINE_WIDTH = 9
 HEIGHT_OFFSET = 250
@@ -50,11 +51,13 @@ PLAYER2_COLOR = &#34;red&#34;
 PLAYER_COLORS = (PLAYER1_COLOR, PLAYER2_COLOR)
 PLAYER_COUNT = 2
 
+
 def quit():
     &#34;&#34;&#34;Quits the program
     &#34;&#34;&#34;
     pygame.quit()
     sys.exit()
+
 
 def formatted_score(score: int) -&gt; str:
     &#34;&#34;&#34;Returns an integer into a formatted string
@@ -77,8 +80,7 @@ def formatted_time(time_in_seconds: int) -&gt; str:
     Returns:
         str: time in the format &#34;mm:ss&#34;
     &#34;&#34;&#34;
-    minutes = time_in_seconds // 60
-    seconds = time_in_seconds % 60
+    minutes, seconds = divmod(time_in_seconds, 60)
     return f&#34;{minutes:02d}:{seconds:02d}&#34;
 
 
@@ -124,7 +126,7 @@ def get_score_label(score: int, font: FontManager, player1: bool) -&gt; tuple[py
     return (player_score_label, player_score_rect)
 
 
-def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players: tuple[str, str]=(&#34;Playername00&#34;, &#34;Playername01&#34;), config: dict[str, Any] = DEFAULT_SETTINGS, mode: int=1):
+def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] = (5, 5), players: tuple[str, str] = (&#34;Playername00&#34;, &#34;Playername01&#34;), config: dict[str, Any] = DEFAULT_SETTINGS):
     &#34;&#34;&#34;Game screen, to play the game of Pipopipette
 
     Args:
@@ -136,7 +138,7 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
     # Initialize game
     pipo: Pipopipette = Pipopipette(*size)
     gameplay: PipopipetteGameplay = PipopipetteGameplay(list_player_name=list(players), pipopipette=pipo)
-    
+
     # Initialize pygame
     clock: pygame.time.Clock = pygame.time.Clock()
     pygame.display.set_caption(&#34;Pipopipette&#34;)
@@ -154,14 +156,11 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
     start_time_in_seconds: float = time.time()
 
     # Initialize player usernames labels
-    player1_label: pygame.surface.Surface = game_font.get_font(
-        33).render(players[0], True, &#34;#EEEEEE&#34;)
+    player1_label: pygame.surface.Surface = game_font.get_font(33).render(players[0], True, &#34;#EEEEEE&#34;)
     player1_rect: pygame.rect.Rect = player1_label.get_rect(center=(100, 593))
-    player2_label: pygame.surface.Surface = game_font.get_font(
-        33).render(players[1], True, &#34;#EEEEEE&#34;)
-    player2_rect: pygame.rect.Rect = player2_label.get_rect(
-        center=(1280-100, 593))
-    
+    player2_label: pygame.surface.Surface = game_font.get_font(33).render(players[1], True, &#34;#EEEEEE&#34;)
+    player2_rect: pygame.rect.Rect = player2_label.get_rect(center=(1280-100, 593))
+
     # Load and create end popup
     end_popup = Popup(
         screen=screen,
@@ -172,7 +171,8 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
 
     def restart_button_handler():
         end_popup.active = False
-        game(screen, size, players, config)
+        game(screen, mode, size, players, config)
+
     # Add a vertically centered restart button
     end_popup_restart_button = Button(
         screen=end_popup.surface,
@@ -182,7 +182,7 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
         font=game_font.get_font(48),
         color=&#34;white&#34;,
         hover_color=&#34;black&#34;,
-        action = restart_button_handler,
+        action=restart_button_handler,
     )
     # register it to the end popup
     end_popup.add_ui_element(end_popup_restart_button)
@@ -205,16 +205,16 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
     board_elements: list[UI] = []
     fillers: list[pygame.Rect] = []
     owned_segments: dict[tuple[int, int, str], int] = {}
-    
+
     def ij_from_square_id(square_id: int, side: str) -&gt; tuple[int, int]:
-        if side in (&#39;t&#39;, &#39;d&#39;):
-            gi: int = square_id%gameplay.pipopipette.WIDTH
+        if side in {&#39;t&#39;, &#39;d&#39;}:
+            gi: int = square_id % gameplay.pipopipette.WIDTH
             gj: int = square_id//gameplay.pipopipette.WIDTH
             if side == &#39;d&#39;:
-                gj+=1
+                gj += 1
         else:
             gj: int = square_id//gameplay.pipopipette.WIDTH
-            gi: int = square_id%gameplay.pipopipette.WIDTH
+            gi: int = square_id % gameplay.pipopipette.WIDTH
             if side == &#39;r&#39; and gi == gameplay.pipopipette.WIDTH-1:
                 gi += 1
         return gi, gj
@@ -227,7 +227,7 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
             side (str): side which was clicked on the square
         &#34;&#34;&#34;
         gi, gj = ij_from_square_id(square_id, side)
-        
+
         print(square_id, side, gi, gj)
         nonlocal owned_segments
         nonlocal start_time_in_seconds
@@ -238,17 +238,17 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
             new_score: list[int] = gameplay.get_score()
             if old_score[gameplay.current_player_ID] &gt;= new_score[gameplay.current_player_ID]:
                 gameplay.next_player()
-                if mode == 1:
+                if mode == gamemode.AI:
                     old_score = []
                     while old_score != new_score:
                         old_score: list[int] = gameplay.get_score()
                         print(gameplay.game_over())
                         a_square, a_side = PipopipetteAI.move_minmax(gameplay, depth=3)
                         if not a_side:
-                            print(&#39;Not&#39;,a_side)
+                            print(&#39;Not&#39;, a_side)
                             break
-                        ai, aj = ij_from_square_id(a_square, a_side) # type: ignore
-                        gameplay.set_player_target(a_square, a_side) # type: ignore
+                        ai, aj = ij_from_square_id(a_square, a_side)  # type: ignore
+                        gameplay.set_player_target(a_square, a_side)  # type: ignore
                         owned_segments[(ai, aj, a_side)] = gameplay.current_player_ID
                         new_score: list[int] = gameplay.get_score()
                     gameplay.next_player()
@@ -258,6 +258,17 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
             # Screen shake / Red tint?
             print(square_id, side, (gi, gj), &#34;is not a valid target!&#34;)
 
+    def square_id_from_ij(gi: int, gj: int, side: str) -&gt; int:
+        if side in {&#39;t&#39;, &#39;d&#39;}:
+            square_id: int = gj * gameplay.pipopipette.WIDTH + gi
+            if side == &#39;d&#39;:
+                square_id += gameplay.pipopipette.WIDTH
+        else:
+            square_id: int = gj * gameplay.pipopipette.WIDTH + gi
+            if side == &#39;r&#39; and gi == gameplay.pipopipette.WIDTH-1:
+                square_id += 1
+        return square_id
+
     def update_board() -&gt; tuple[list[UI], list[pygame.Rect]]:
         &#34;&#34;&#34;Updates the board
 
@@ -266,6 +277,7 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
         &#34;&#34;&#34;
         board_elements: list[UI] = []
         fillers: list[pygame.Rect] = []
+        counter = {}
         for i in range(size[0]+1):
             for j in range(size[1]+1):
                 # Calculates the position of the segment
@@ -284,6 +296,7 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
                     for side in (&#39;t&#39;, &#39;d&#39;):
                         if (i, j, side) in owned_segments:
                             color = PLAYER_COLORS[owned_segments[(i, j, side)]]
+
                     def vertical_segment_handler(i: int, j: int):
                         &#34;&#34;&#34;Calculates the square&#39;s ID and segment clicked and calls `segment_handler`
 
@@ -315,9 +328,22 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
                 if j != size[1]:
                     # Select the color based on who owns the segment
                     color: str = &#34;white&#34;
-                    for side in (&#39;r&#39;, &#39;l&#39;):
-                        if (i, j, side) in owned_segments:
-                            color = PLAYER_COLORS[owned_segments[(i, j, side)]]
+
+                    for key in counter:
+                        counter[key] -= 1
+                        if counter[key] == 0:
+                            color = PLAYER_COLORS[owned_segments[key]]
+
+
+                    if (i, j, &#39;l&#39;) in owned_segments:
+                        color = PLAYER_COLORS[owned_segments[(i, j, &#39;l&#39;)]]
+
+                    if (i, j, &#39;r&#39;) in owned_segments:
+                        if i == gameplay.pipopipette.WIDTH:
+                            color = PLAYER_COLORS[owned_segments[(i, j, &#39;r&#39;)]]
+                        else:
+                            counter[(i,j,&#39;r&#39;)] = gameplay.pipopipette.WIDTH
+
                     def horizontal_segment_handler(i: int, j: int):
                         &#34;&#34;&#34;Calculates the square&#39;s ID and segment clicked and calls `segment_handler`
 
@@ -332,7 +358,8 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
                         square_id = newi+size[0]*j
 
                         segment_handler(square_id, side)
-                    # Creates a horizontal segment 
+
+                    # Creates a horizontal segment
                     y_segment: Button = Button(
                         screen=screen,
                         image=pygame.image.load(resource_path(
@@ -360,10 +387,14 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
             labels[&#34;timer&#34;] = get_stopwatch_label(start_time_in_seconds, game_font)
             labels[&#34;player1_score&#34;] = get_score_label(score[0], game_font, True)
             labels[&#34;player2_score&#34;] = get_score_label(score[1], game_font, False)
-            if &#34;timer&#34; in config and config[&#34;timer&#34;] &gt; 0:
-                if (time.time()-start_time_in_seconds &gt; config[&#34;timer&#34;]) and (end_update_counter == 0):
-                    end_update_counter = 1
-                    end_flag = 1
+            if (
+                &#34;timer&#34; in config
+                and config[&#34;timer&#34;] &gt; 0
+                and (time.time() - start_time_in_seconds &gt; config[&#34;timer&#34;])
+                and (end_update_counter == 0)
+            ):
+                end_update_counter = 1
+                end_flag = 1
         # Display the FPS counter in console
         print(int(clock.get_fps()), end=&#34; FPS    \r&#34;)
         # Display the background to the screen first /!\
@@ -409,14 +440,14 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
                 player2_score_rect: pygame.rect.Rect = player1_score_label.get_rect(center=(end_popup.surface.get_size()[0]//2*1.5, end_popup.surface.get_size()[1]//2*1.3))
                 winner_str: str = &#34;default_winner_str&#34;
                 match end_flag:
-                    case 1: # Time out
+                    case 1:  # Time out
                         # If a player has more score than the other, he wins, otherwise it&#39;s a draw
                         winner_str = f&#34;{players[gameplay.current_player_ID]} timed out&#34;
                         # Create the winner text
                         winner_label: pygame.surface.Surface = game_font.get_font(75).render(winner_str, True, &#34;white&#34;)
                         winner_rect: pygame.rect.Rect = winner_label.get_rect(center=(end_popup.surface.get_size()[0]//2, end_popup.surface.get_size()[1]//2*0.8))
                         end_popup.add_rect(winner_label, winner_rect)
-                    case _: # The game is over
+                    case _:  # The game is over
                         winner_str = &#34;Draw!&#34;
                         # If a player has more score than the other, he wins, otherwise it&#39;s a draw
                         if score[0] &gt; score[1]:
@@ -501,13 +532,12 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
     Returns:
         str: time in the format &#34;mm:ss&#34;
     &#34;&#34;&#34;
-    minutes = time_in_seconds // 60
-    seconds = time_in_seconds % 60
+    minutes, seconds = divmod(time_in_seconds, 60)
     return f&#34;{minutes:02d}:{seconds:02d}&#34;</code></pre>
 </details>
 </dd>
 <dt id="jeu.game.game"><code class="name flex">
-<span>def <span class="ident">game</span></span>(<span>screen: pygame.Surface, size: tuple[int, int] = (5, 5), players: tuple[str, str] = ('Playername00', 'Playername01'), config: dict[str, typing.Any] = {'timer': 60}, mode: int = 1)</span>
+<span>def <span class="ident">game</span></span>(<span>screen: pygame.Surface, mode: <a title="jeu.utils.tools.gamemode" href="utils/tools.html#jeu.utils.tools.gamemode">gamemode</a>, size: tuple[int, int] = (5, 5), players: tuple[str, str] = ('Playername00', 'Playername01'), config: dict[str, typing.Any] = {'timer': 60})</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Game screen, to play the game of Pipopipette</p>
@@ -526,7 +556,7 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players: tuple[str, str]=(&#34;Playername00&#34;, &#34;Playername01&#34;), config: dict[str, Any] = DEFAULT_SETTINGS, mode: int=1):
+<pre><code class="python">def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] = (5, 5), players: tuple[str, str] = (&#34;Playername00&#34;, &#34;Playername01&#34;), config: dict[str, Any] = DEFAULT_SETTINGS):
     &#34;&#34;&#34;Game screen, to play the game of Pipopipette
 
     Args:
@@ -538,7 +568,7 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
     # Initialize game
     pipo: Pipopipette = Pipopipette(*size)
     gameplay: PipopipetteGameplay = PipopipetteGameplay(list_player_name=list(players), pipopipette=pipo)
-    
+
     # Initialize pygame
     clock: pygame.time.Clock = pygame.time.Clock()
     pygame.display.set_caption(&#34;Pipopipette&#34;)
@@ -556,14 +586,11 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
     start_time_in_seconds: float = time.time()
 
     # Initialize player usernames labels
-    player1_label: pygame.surface.Surface = game_font.get_font(
-        33).render(players[0], True, &#34;#EEEEEE&#34;)
+    player1_label: pygame.surface.Surface = game_font.get_font(33).render(players[0], True, &#34;#EEEEEE&#34;)
     player1_rect: pygame.rect.Rect = player1_label.get_rect(center=(100, 593))
-    player2_label: pygame.surface.Surface = game_font.get_font(
-        33).render(players[1], True, &#34;#EEEEEE&#34;)
-    player2_rect: pygame.rect.Rect = player2_label.get_rect(
-        center=(1280-100, 593))
-    
+    player2_label: pygame.surface.Surface = game_font.get_font(33).render(players[1], True, &#34;#EEEEEE&#34;)
+    player2_rect: pygame.rect.Rect = player2_label.get_rect(center=(1280-100, 593))
+
     # Load and create end popup
     end_popup = Popup(
         screen=screen,
@@ -574,7 +601,8 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
 
     def restart_button_handler():
         end_popup.active = False
-        game(screen, size, players, config)
+        game(screen, mode, size, players, config)
+
     # Add a vertically centered restart button
     end_popup_restart_button = Button(
         screen=end_popup.surface,
@@ -584,7 +612,7 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
         font=game_font.get_font(48),
         color=&#34;white&#34;,
         hover_color=&#34;black&#34;,
-        action = restart_button_handler,
+        action=restart_button_handler,
     )
     # register it to the end popup
     end_popup.add_ui_element(end_popup_restart_button)
@@ -607,16 +635,16 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
     board_elements: list[UI] = []
     fillers: list[pygame.Rect] = []
     owned_segments: dict[tuple[int, int, str], int] = {}
-    
+
     def ij_from_square_id(square_id: int, side: str) -&gt; tuple[int, int]:
-        if side in (&#39;t&#39;, &#39;d&#39;):
-            gi: int = square_id%gameplay.pipopipette.WIDTH
+        if side in {&#39;t&#39;, &#39;d&#39;}:
+            gi: int = square_id % gameplay.pipopipette.WIDTH
             gj: int = square_id//gameplay.pipopipette.WIDTH
             if side == &#39;d&#39;:
-                gj+=1
+                gj += 1
         else:
             gj: int = square_id//gameplay.pipopipette.WIDTH
-            gi: int = square_id%gameplay.pipopipette.WIDTH
+            gi: int = square_id % gameplay.pipopipette.WIDTH
             if side == &#39;r&#39; and gi == gameplay.pipopipette.WIDTH-1:
                 gi += 1
         return gi, gj
@@ -629,7 +657,7 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
             side (str): side which was clicked on the square
         &#34;&#34;&#34;
         gi, gj = ij_from_square_id(square_id, side)
-        
+
         print(square_id, side, gi, gj)
         nonlocal owned_segments
         nonlocal start_time_in_seconds
@@ -640,17 +668,17 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
             new_score: list[int] = gameplay.get_score()
             if old_score[gameplay.current_player_ID] &gt;= new_score[gameplay.current_player_ID]:
                 gameplay.next_player()
-                if mode == 1:
+                if mode == gamemode.AI:
                     old_score = []
                     while old_score != new_score:
                         old_score: list[int] = gameplay.get_score()
                         print(gameplay.game_over())
                         a_square, a_side = PipopipetteAI.move_minmax(gameplay, depth=3)
                         if not a_side:
-                            print(&#39;Not&#39;,a_side)
+                            print(&#39;Not&#39;, a_side)
                             break
-                        ai, aj = ij_from_square_id(a_square, a_side) # type: ignore
-                        gameplay.set_player_target(a_square, a_side) # type: ignore
+                        ai, aj = ij_from_square_id(a_square, a_side)  # type: ignore
+                        gameplay.set_player_target(a_square, a_side)  # type: ignore
                         owned_segments[(ai, aj, a_side)] = gameplay.current_player_ID
                         new_score: list[int] = gameplay.get_score()
                     gameplay.next_player()
@@ -660,6 +688,17 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
             # Screen shake / Red tint?
             print(square_id, side, (gi, gj), &#34;is not a valid target!&#34;)
 
+    def square_id_from_ij(gi: int, gj: int, side: str) -&gt; int:
+        if side in {&#39;t&#39;, &#39;d&#39;}:
+            square_id: int = gj * gameplay.pipopipette.WIDTH + gi
+            if side == &#39;d&#39;:
+                square_id += gameplay.pipopipette.WIDTH
+        else:
+            square_id: int = gj * gameplay.pipopipette.WIDTH + gi
+            if side == &#39;r&#39; and gi == gameplay.pipopipette.WIDTH-1:
+                square_id += 1
+        return square_id
+
     def update_board() -&gt; tuple[list[UI], list[pygame.Rect]]:
         &#34;&#34;&#34;Updates the board
 
@@ -668,6 +707,7 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
         &#34;&#34;&#34;
         board_elements: list[UI] = []
         fillers: list[pygame.Rect] = []
+        counter = {}
         for i in range(size[0]+1):
             for j in range(size[1]+1):
                 # Calculates the position of the segment
@@ -686,6 +726,7 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
                     for side in (&#39;t&#39;, &#39;d&#39;):
                         if (i, j, side) in owned_segments:
                             color = PLAYER_COLORS[owned_segments[(i, j, side)]]
+
                     def vertical_segment_handler(i: int, j: int):
                         &#34;&#34;&#34;Calculates the square&#39;s ID and segment clicked and calls `segment_handler`
 
@@ -717,9 +758,22 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
                 if j != size[1]:
                     # Select the color based on who owns the segment
                     color: str = &#34;white&#34;
-                    for side in (&#39;r&#39;, &#39;l&#39;):
-                        if (i, j, side) in owned_segments:
-                            color = PLAYER_COLORS[owned_segments[(i, j, side)]]
+
+                    for key in counter:
+                        counter[key] -= 1
+                        if counter[key] == 0:
+                            color = PLAYER_COLORS[owned_segments[key]]
+
+
+                    if (i, j, &#39;l&#39;) in owned_segments:
+                        color = PLAYER_COLORS[owned_segments[(i, j, &#39;l&#39;)]]
+
+                    if (i, j, &#39;r&#39;) in owned_segments:
+                        if i == gameplay.pipopipette.WIDTH:
+                            color = PLAYER_COLORS[owned_segments[(i, j, &#39;r&#39;)]]
+                        else:
+                            counter[(i,j,&#39;r&#39;)] = gameplay.pipopipette.WIDTH
+
                     def horizontal_segment_handler(i: int, j: int):
                         &#34;&#34;&#34;Calculates the square&#39;s ID and segment clicked and calls `segment_handler`
 
@@ -734,7 +788,8 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
                         square_id = newi+size[0]*j
 
                         segment_handler(square_id, side)
-                    # Creates a horizontal segment 
+
+                    # Creates a horizontal segment
                     y_segment: Button = Button(
                         screen=screen,
                         image=pygame.image.load(resource_path(
@@ -762,10 +817,14 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
             labels[&#34;timer&#34;] = get_stopwatch_label(start_time_in_seconds, game_font)
             labels[&#34;player1_score&#34;] = get_score_label(score[0], game_font, True)
             labels[&#34;player2_score&#34;] = get_score_label(score[1], game_font, False)
-            if &#34;timer&#34; in config and config[&#34;timer&#34;] &gt; 0:
-                if (time.time()-start_time_in_seconds &gt; config[&#34;timer&#34;]) and (end_update_counter == 0):
-                    end_update_counter = 1
-                    end_flag = 1
+            if (
+                &#34;timer&#34; in config
+                and config[&#34;timer&#34;] &gt; 0
+                and (time.time() - start_time_in_seconds &gt; config[&#34;timer&#34;])
+                and (end_update_counter == 0)
+            ):
+                end_update_counter = 1
+                end_flag = 1
         # Display the FPS counter in console
         print(int(clock.get_fps()), end=&#34; FPS    \r&#34;)
         # Display the background to the screen first /!\
@@ -811,14 +870,14 @@ def game(screen: pygame.surface.Surface, size: tuple[int, int] = (5,5), players:
                 player2_score_rect: pygame.rect.Rect = player1_score_label.get_rect(center=(end_popup.surface.get_size()[0]//2*1.5, end_popup.surface.get_size()[1]//2*1.3))
                 winner_str: str = &#34;default_winner_str&#34;
                 match end_flag:
-                    case 1: # Time out
+                    case 1:  # Time out
                         # If a player has more score than the other, he wins, otherwise it&#39;s a draw
                         winner_str = f&#34;{players[gameplay.current_player_ID]} timed out&#34;
                         # Create the winner text
                         winner_label: pygame.surface.Surface = game_font.get_font(75).render(winner_str, True, &#34;white&#34;)
                         winner_rect: pygame.rect.Rect = winner_label.get_rect(center=(end_popup.surface.get_size()[0]//2, end_popup.surface.get_size()[1]//2*0.8))
                         end_popup.add_rect(winner_label, winner_rect)
-                    case _: # The game is over
+                    case _:  # The game is over
                         winner_str = &#34;Draw!&#34;
                         # If a player has more score than the other, he wins, otherwise it&#39;s a draw
                         if score[0] &gt; score[1]:

@@ -26,14 +26,15 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import Generator
+<pre><code class="python">from random import choice
+from typing import Generator
+
 from jeu.engine.PipopipetteGameplay import PipopipetteGameplay
-from random import choice
-import time
+
+
 class PipopipetteAI:
     &#34;&#34;&#34;Class which will be used to control the AI&#39;s logic.
     &#34;&#34;&#34;
-
     @staticmethod
     def __list_moves(gameplay: PipopipetteGameplay) -&gt; Generator[tuple[int, str], None, None]:
         &#34;&#34;&#34;Iterator to go through the valid moves the player can go through
@@ -44,49 +45,59 @@ class PipopipetteAI:
         Yields:
             Generator[tuple[int, str], None, None]: Generator
         &#34;&#34;&#34;
+        # List of checked sides: dict[side, list[square_id]]
+        checked_sides: dict[str, list[int]] = {&#39;l&#39;: [], &#39;r&#39;: [], &#39;t&#39;: [], &#39;d&#39;: []}
+        width: int = gameplay.pipopipette.WIDTH
+        
         for square in gameplay.pipopipette.list_square:
             if square.square_owner == -1:
-                if square.left.owner_ID == -1:
+                if square.left.owner_ID == -1 and (square.ID not in checked_sides[&#34;l&#34;]):
+                    checked_sides[&#34;r&#34;].append(square.ID-1)
                     yield square.ID, &#39;l&#39;
-                if square.top.owner_ID == -1:
+                if square.top.owner_ID == -1 and (square.ID not in checked_sides[&#34;t&#34;]):
+                    checked_sides[&#34;d&#34;].append(square.ID-width)
                     yield square.ID, &#39;t&#39;
-                # if square.right.owner_ID == -1:
-                #     yield square.ID, &#39;r&#39;
-                if square.down.owner_ID == -1:
+                if square.right.owner_ID == -1 and (square.ID not in checked_sides[&#34;r&#34;]):
+                    checked_sides[&#34;l&#34;].append(square.ID+1)
+                    yield square.ID, &#39;r&#39;
+                if square.down.owner_ID == -1 and (square.ID not in checked_sides[&#34;d&#34;]):
+                    checked_sides[&#34;t&#34;].append(square.ID+width)
                     yield square.ID, &#39;d&#39;
 
-
     @staticmethod
-    def move_random(gameplay: PipopipetteGameplay) -&gt; tuple[None, None]|tuple[int, str]:
+    def move_random(gameplay: PipopipetteGameplay) -&gt; tuple[None, None] | tuple[int, str]:
         &#34;&#34;&#34;Pick a random move for the AI to play
-
         Args:
             gameplay (PipopipetteGameplay): Game to play on
-
         Returns:
             tuple[None, None]|tuple[int, str]: Resulting square and side
         &#34;&#34;&#34;
-        moves = [move for move in PipopipetteAI.__list_moves(gameplay)]
-        if moves:
+        if moves := list(PipopipetteAI.__list_moves(gameplay)):
             return choice(moves)
         else:
-             return (None, None)
+            return (None, None)
 
     @staticmethod
-    def move_minmax(gameplay: PipopipetteGameplay, depth: int = 2, time_limit: float = 5.0) -&gt; tuple[None, None]|tuple[int, str]:
+    def move_minmax(gameplay: PipopipetteGameplay, depth: int = 2) -&gt; tuple[None, None] | tuple[int, str]:
         &#34;&#34;&#34;Pick a move for the AI to play by simulating the next moves
 
         Args:
             gameplay (PipopipetteGameplay): Game to play on
             depth (int): Maximum depth to search
-            time_limit (float): Maximum time limit for search, in seconds
 
         Returns:
             tuple[None, None]|tuple[int, str]: Resulting square and side
         &#34;&#34;&#34;
+        memo = {}
+
         def max_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -&gt; float:
+            key = (gameplay.pipopipette, depth, &#34;max&#34;)
+            if key in memo:
+                return memo[key]
+
             if depth == 0 or gameplay.game_over():
-                return PipopipetteAI.evaluate(gameplay)
+                memo[key] = PipopipetteAI.evaluate(gameplay)
+                return memo[key]
 
             value = float(&#39;-inf&#39;)
             for move in PipopipetteAI.__list_moves(gameplay):
@@ -95,11 +106,17 @@ class PipopipetteAI:
                 alpha = max(alpha, value)
                 if alpha &gt;= beta:
                     break
+            memo[key] = value
             return value
 
         def min_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -&gt; float:
+            key = (gameplay.pipopipette, depth, &#34;min&#34;)
+            if key in memo:
+                return memo[key]
+
             if depth == 0 or gameplay.game_over():
-                return PipopipetteAI.evaluate(gameplay)
+                memo[key] = PipopipetteAI.evaluate(gameplay)
+                return memo[key]
 
             value = float(&#39;inf&#39;)
             for move in PipopipetteAI.__list_moves(gameplay):
@@ -108,9 +125,9 @@ class PipopipetteAI:
                 beta = min(beta, value)
                 if alpha &gt;= beta:
                     break
+            memo[key] = value
             return value
 
-        start_time = time.monotonic()
         best_move = (None, None)
         best_value = float(&#39;-inf&#39;)
         alpha = float(&#39;-inf&#39;)
@@ -118,15 +135,10 @@ class PipopipetteAI:
         for move in PipopipetteAI.__list_moves(gameplay):
             next_state = PipopipetteAI.get_next_state(gameplay, *move)
             value = min_value(next_state, depth - 1, alpha, beta)
-            if value &gt; best_value:
+            if best_value == float(&#39;-inf&#39;) or value &gt; best_value:
                 best_value = value
                 best_move = move
             alpha = max(alpha, best_value)
-
-            elapsed_time = time.monotonic() - start_time
-            if elapsed_time &gt;= time_limit:
-                break
-
         return best_move
 
     @staticmethod
@@ -140,33 +152,9 @@ class PipopipetteAI:
             float: Evaluation score
         &#34;&#34;&#34;
         opponent_score, ai_score = gameplay.get_score()
-        potential_squares = len(PipopipetteAI.get_potential_squares(gameplay))
-        
-        # Compute the evaluation score based on the above factors
-        score = (ai_score*2) - opponent_score + potential_squares
-        
-        return score
-    
-    @staticmethod    
-    def get_potential_squares(gameplay: PipopipetteGameplay) -&gt; list[int]:
-        &#34;&#34;&#34;Get the IDs of the squares that could potentially be completed
-        by filling a side of the specified square.
 
-        Args:
-            gameplay (PipopipetteGameplay): Game to use
+        return (ai_score*2) - opponent_score
 
-        Returns:
-            list[int]: IDs of the potential squares that could be completed
-        &#34;&#34;&#34;
-        potential_squares = []
-        
-        for square in gameplay.pipopipette.list_square:
-            if square.square_owner == -1:
-                # One side is open
-                if [square.left.owner_ID, square.right.owner_ID, square.top.owner_ID, square.down.owner_ID].count(-1) == 1:
-                    potential_squares.append(0)
-        return potential_squares
-    
     @staticmethod
     def get_next_state(gameplay: PipopipetteGameplay, square_id: int, side: str) -&gt; &#39;PipopipetteGameplay&#39;:
         &#34;&#34;&#34;Return the next game state after applying a move
@@ -180,13 +168,11 @@ class PipopipetteAI:
         &#34;&#34;&#34;
         # Create a copy of the game board
         new_gameplay = gameplay.copy()
-        
+
         new_gameplay.pipopipette.set_side(square_id, side, new_gameplay.current_player_ID)
         new_gameplay.next_player()
 
-        # Create a new game state object and switch the player
-        new_state = new_gameplay
-        return new_state</code></pre>
+        return new_gameplay</code></pre>
 </details>
 </section>
 <section>
@@ -210,7 +196,6 @@ class PipopipetteAI:
 <pre><code class="python">class PipopipetteAI:
     &#34;&#34;&#34;Class which will be used to control the AI&#39;s logic.
     &#34;&#34;&#34;
-
     @staticmethod
     def __list_moves(gameplay: PipopipetteGameplay) -&gt; Generator[tuple[int, str], None, None]:
         &#34;&#34;&#34;Iterator to go through the valid moves the player can go through
@@ -221,49 +206,59 @@ class PipopipetteAI:
         Yields:
             Generator[tuple[int, str], None, None]: Generator
         &#34;&#34;&#34;
+        # List of checked sides: dict[side, list[square_id]]
+        checked_sides: dict[str, list[int]] = {&#39;l&#39;: [], &#39;r&#39;: [], &#39;t&#39;: [], &#39;d&#39;: []}
+        width: int = gameplay.pipopipette.WIDTH
+        
         for square in gameplay.pipopipette.list_square:
             if square.square_owner == -1:
-                if square.left.owner_ID == -1:
+                if square.left.owner_ID == -1 and (square.ID not in checked_sides[&#34;l&#34;]):
+                    checked_sides[&#34;r&#34;].append(square.ID-1)
                     yield square.ID, &#39;l&#39;
-                if square.top.owner_ID == -1:
+                if square.top.owner_ID == -1 and (square.ID not in checked_sides[&#34;t&#34;]):
+                    checked_sides[&#34;d&#34;].append(square.ID-width)
                     yield square.ID, &#39;t&#39;
-                # if square.right.owner_ID == -1:
-                #     yield square.ID, &#39;r&#39;
-                if square.down.owner_ID == -1:
+                if square.right.owner_ID == -1 and (square.ID not in checked_sides[&#34;r&#34;]):
+                    checked_sides[&#34;l&#34;].append(square.ID+1)
+                    yield square.ID, &#39;r&#39;
+                if square.down.owner_ID == -1 and (square.ID not in checked_sides[&#34;d&#34;]):
+                    checked_sides[&#34;t&#34;].append(square.ID+width)
                     yield square.ID, &#39;d&#39;
 
-
     @staticmethod
-    def move_random(gameplay: PipopipetteGameplay) -&gt; tuple[None, None]|tuple[int, str]:
+    def move_random(gameplay: PipopipetteGameplay) -&gt; tuple[None, None] | tuple[int, str]:
         &#34;&#34;&#34;Pick a random move for the AI to play
-
         Args:
             gameplay (PipopipetteGameplay): Game to play on
-
         Returns:
             tuple[None, None]|tuple[int, str]: Resulting square and side
         &#34;&#34;&#34;
-        moves = [move for move in PipopipetteAI.__list_moves(gameplay)]
-        if moves:
+        if moves := list(PipopipetteAI.__list_moves(gameplay)):
             return choice(moves)
         else:
-             return (None, None)
+            return (None, None)
 
     @staticmethod
-    def move_minmax(gameplay: PipopipetteGameplay, depth: int = 2, time_limit: float = 5.0) -&gt; tuple[None, None]|tuple[int, str]:
+    def move_minmax(gameplay: PipopipetteGameplay, depth: int = 2) -&gt; tuple[None, None] | tuple[int, str]:
         &#34;&#34;&#34;Pick a move for the AI to play by simulating the next moves
 
         Args:
             gameplay (PipopipetteGameplay): Game to play on
             depth (int): Maximum depth to search
-            time_limit (float): Maximum time limit for search, in seconds
 
         Returns:
             tuple[None, None]|tuple[int, str]: Resulting square and side
         &#34;&#34;&#34;
+        memo = {}
+
         def max_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -&gt; float:
+            key = (gameplay.pipopipette, depth, &#34;max&#34;)
+            if key in memo:
+                return memo[key]
+
             if depth == 0 or gameplay.game_over():
-                return PipopipetteAI.evaluate(gameplay)
+                memo[key] = PipopipetteAI.evaluate(gameplay)
+                return memo[key]
 
             value = float(&#39;-inf&#39;)
             for move in PipopipetteAI.__list_moves(gameplay):
@@ -272,11 +267,17 @@ class PipopipetteAI:
                 alpha = max(alpha, value)
                 if alpha &gt;= beta:
                     break
+            memo[key] = value
             return value
 
         def min_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -&gt; float:
+            key = (gameplay.pipopipette, depth, &#34;min&#34;)
+            if key in memo:
+                return memo[key]
+
             if depth == 0 or gameplay.game_over():
-                return PipopipetteAI.evaluate(gameplay)
+                memo[key] = PipopipetteAI.evaluate(gameplay)
+                return memo[key]
 
             value = float(&#39;inf&#39;)
             for move in PipopipetteAI.__list_moves(gameplay):
@@ -285,9 +286,9 @@ class PipopipetteAI:
                 beta = min(beta, value)
                 if alpha &gt;= beta:
                     break
+            memo[key] = value
             return value
 
-        start_time = time.monotonic()
         best_move = (None, None)
         best_value = float(&#39;-inf&#39;)
         alpha = float(&#39;-inf&#39;)
@@ -295,15 +296,10 @@ class PipopipetteAI:
         for move in PipopipetteAI.__list_moves(gameplay):
             next_state = PipopipetteAI.get_next_state(gameplay, *move)
             value = min_value(next_state, depth - 1, alpha, beta)
-            if value &gt; best_value:
+            if best_value == float(&#39;-inf&#39;) or value &gt; best_value:
                 best_value = value
                 best_move = move
             alpha = max(alpha, best_value)
-
-            elapsed_time = time.monotonic() - start_time
-            if elapsed_time &gt;= time_limit:
-                break
-
         return best_move
 
     @staticmethod
@@ -317,33 +313,9 @@ class PipopipetteAI:
             float: Evaluation score
         &#34;&#34;&#34;
         opponent_score, ai_score = gameplay.get_score()
-        potential_squares = len(PipopipetteAI.get_potential_squares(gameplay))
-        
-        # Compute the evaluation score based on the above factors
-        score = (ai_score*2) - opponent_score + potential_squares
-        
-        return score
-    
-    @staticmethod    
-    def get_potential_squares(gameplay: PipopipetteGameplay) -&gt; list[int]:
-        &#34;&#34;&#34;Get the IDs of the squares that could potentially be completed
-        by filling a side of the specified square.
 
-        Args:
-            gameplay (PipopipetteGameplay): Game to use
+        return (ai_score*2) - opponent_score
 
-        Returns:
-            list[int]: IDs of the potential squares that could be completed
-        &#34;&#34;&#34;
-        potential_squares = []
-        
-        for square in gameplay.pipopipette.list_square:
-            if square.square_owner == -1:
-                # One side is open
-                if [square.left.owner_ID, square.right.owner_ID, square.top.owner_ID, square.down.owner_ID].count(-1) == 1:
-                    potential_squares.append(0)
-        return potential_squares
-    
     @staticmethod
     def get_next_state(gameplay: PipopipetteGameplay, square_id: int, side: str) -&gt; &#39;PipopipetteGameplay&#39;:
         &#34;&#34;&#34;Return the next game state after applying a move
@@ -357,13 +329,11 @@ class PipopipetteAI:
         &#34;&#34;&#34;
         # Create a copy of the game board
         new_gameplay = gameplay.copy()
-        
+
         new_gameplay.pipopipette.set_side(square_id, side, new_gameplay.current_player_ID)
         new_gameplay.next_player()
 
-        # Create a new game state object and switch the player
-        new_state = new_gameplay
-        return new_state</code></pre>
+        return new_gameplay</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
@@ -397,12 +367,8 @@ def evaluate(gameplay: PipopipetteGameplay) -&gt; float:
         float: Evaluation score
     &#34;&#34;&#34;
     opponent_score, ai_score = gameplay.get_score()
-    potential_squares = len(PipopipetteAI.get_potential_squares(gameplay))
-    
-    # Compute the evaluation score based on the above factors
-    score = (ai_score*2) - opponent_score + potential_squares
-    
-    return score</code></pre>
+
+    return (ai_score*2) - opponent_score</code></pre>
 </details>
 </dd>
 <dt id="jeu.engine.PipopipetteAI.PipopipetteAI.get_next_state"><code class="name flex">
@@ -439,58 +405,15 @@ def get_next_state(gameplay: PipopipetteGameplay, square_id: int, side: str) -&g
     &#34;&#34;&#34;
     # Create a copy of the game board
     new_gameplay = gameplay.copy()
-    
+
     new_gameplay.pipopipette.set_side(square_id, side, new_gameplay.current_player_ID)
     new_gameplay.next_player()
 
-    # Create a new game state object and switch the player
-    new_state = new_gameplay
-    return new_state</code></pre>
-</details>
-</dd>
-<dt id="jeu.engine.PipopipetteAI.PipopipetteAI.get_potential_squares"><code class="name flex">
-<span>def <span class="ident">get_potential_squares</span></span>(<span>gameplay: <a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay" href="PipopipetteGameplay.html#jeu.engine.PipopipetteGameplay.PipopipetteGameplay">PipopipetteGameplay</a>) ‑> list[int]</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Get the IDs of the squares that could potentially be completed
-by filling a side of the specified square.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>gameplay</code></strong> :&ensp;<code>PipopipetteGameplay</code></dt>
-<dd>Game to use</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>list[int]</code></dt>
-<dd>IDs of the potential squares that could be completed</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@staticmethod    
-def get_potential_squares(gameplay: PipopipetteGameplay) -&gt; list[int]:
-    &#34;&#34;&#34;Get the IDs of the squares that could potentially be completed
-    by filling a side of the specified square.
-
-    Args:
-        gameplay (PipopipetteGameplay): Game to use
-
-    Returns:
-        list[int]: IDs of the potential squares that could be completed
-    &#34;&#34;&#34;
-    potential_squares = []
-    
-    for square in gameplay.pipopipette.list_square:
-        if square.square_owner == -1:
-            # One side is open
-            if [square.left.owner_ID, square.right.owner_ID, square.top.owner_ID, square.down.owner_ID].count(-1) == 1:
-                potential_squares.append(0)
-    return potential_squares</code></pre>
+    return new_gameplay</code></pre>
 </details>
 </dd>
 <dt id="jeu.engine.PipopipetteAI.PipopipetteAI.move_minmax"><code class="name flex">
-<span>def <span class="ident">move_minmax</span></span>(<span>gameplay: <a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay" href="PipopipetteGameplay.html#jeu.engine.PipopipetteGameplay.PipopipetteGameplay">PipopipetteGameplay</a>, depth: int = 2, time_limit: float = 5.0) ‑> tuple[None, None] | tuple[int, str]</span>
+<span>def <span class="ident">move_minmax</span></span>(<span>gameplay: <a title="jeu.engine.PipopipetteGameplay.PipopipetteGameplay" href="PipopipetteGameplay.html#jeu.engine.PipopipetteGameplay.PipopipetteGameplay">PipopipetteGameplay</a>, depth: int = 2) ‑> tuple[None, None] | tuple[int, str]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Pick a move for the AI to play by simulating the next moves</p>
@@ -500,8 +423,6 @@ def get_potential_squares(gameplay: PipopipetteGameplay) -&gt; list[int]:
 <dd>Game to play on</dd>
 <dt><strong><code>depth</code></strong> :&ensp;<code>int</code></dt>
 <dd>Maximum depth to search</dd>
-<dt><strong><code>time_limit</code></strong> :&ensp;<code>float</code></dt>
-<dd>Maximum time limit for search, in seconds</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>tuple[None, None]|tuple[int, str]: Resulting square and side</p></div>
@@ -510,20 +431,26 @@ def get_potential_squares(gameplay: PipopipetteGameplay) -&gt; list[int]:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
-def move_minmax(gameplay: PipopipetteGameplay, depth: int = 2, time_limit: float = 5.0) -&gt; tuple[None, None]|tuple[int, str]:
+def move_minmax(gameplay: PipopipetteGameplay, depth: int = 2) -&gt; tuple[None, None] | tuple[int, str]:
     &#34;&#34;&#34;Pick a move for the AI to play by simulating the next moves
 
     Args:
         gameplay (PipopipetteGameplay): Game to play on
         depth (int): Maximum depth to search
-        time_limit (float): Maximum time limit for search, in seconds
 
     Returns:
         tuple[None, None]|tuple[int, str]: Resulting square and side
     &#34;&#34;&#34;
+    memo = {}
+
     def max_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -&gt; float:
+        key = (gameplay.pipopipette, depth, &#34;max&#34;)
+        if key in memo:
+            return memo[key]
+
         if depth == 0 or gameplay.game_over():
-            return PipopipetteAI.evaluate(gameplay)
+            memo[key] = PipopipetteAI.evaluate(gameplay)
+            return memo[key]
 
         value = float(&#39;-inf&#39;)
         for move in PipopipetteAI.__list_moves(gameplay):
@@ -532,11 +459,17 @@ def move_minmax(gameplay: PipopipetteGameplay, depth: int = 2, time_limit: float
             alpha = max(alpha, value)
             if alpha &gt;= beta:
                 break
+        memo[key] = value
         return value
 
     def min_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -&gt; float:
+        key = (gameplay.pipopipette, depth, &#34;min&#34;)
+        if key in memo:
+            return memo[key]
+
         if depth == 0 or gameplay.game_over():
-            return PipopipetteAI.evaluate(gameplay)
+            memo[key] = PipopipetteAI.evaluate(gameplay)
+            return memo[key]
 
         value = float(&#39;inf&#39;)
         for move in PipopipetteAI.__list_moves(gameplay):
@@ -545,9 +478,9 @@ def move_minmax(gameplay: PipopipetteGameplay, depth: int = 2, time_limit: float
             beta = min(beta, value)
             if alpha &gt;= beta:
                 break
+        memo[key] = value
         return value
 
-    start_time = time.monotonic()
     best_move = (None, None)
     best_value = float(&#39;-inf&#39;)
     alpha = float(&#39;-inf&#39;)
@@ -555,15 +488,10 @@ def move_minmax(gameplay: PipopipetteGameplay, depth: int = 2, time_limit: float
     for move in PipopipetteAI.__list_moves(gameplay):
         next_state = PipopipetteAI.get_next_state(gameplay, *move)
         value = min_value(next_state, depth - 1, alpha, beta)
-        if value &gt; best_value:
+        if best_value == float(&#39;-inf&#39;) or value &gt; best_value:
             best_value = value
             best_move = move
         alpha = max(alpha, best_value)
-
-        elapsed_time = time.monotonic() - start_time
-        if elapsed_time &gt;= time_limit:
-            break
-
     return best_move</code></pre>
 </details>
 </dd>
@@ -584,20 +512,17 @@ def move_minmax(gameplay: PipopipetteGameplay, depth: int = 2, time_limit: float
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
-def move_random(gameplay: PipopipetteGameplay) -&gt; tuple[None, None]|tuple[int, str]:
+def move_random(gameplay: PipopipetteGameplay) -&gt; tuple[None, None] | tuple[int, str]:
     &#34;&#34;&#34;Pick a random move for the AI to play
-
     Args:
         gameplay (PipopipetteGameplay): Game to play on
-
     Returns:
         tuple[None, None]|tuple[int, str]: Resulting square and side
     &#34;&#34;&#34;
-    moves = [move for move in PipopipetteAI.__list_moves(gameplay)]
-    if moves:
+    if moves := list(PipopipetteAI.__list_moves(gameplay)):
         return choice(moves)
     else:
-         return (None, None)</code></pre>
+        return (None, None)</code></pre>
 </details>
 </dd>
 </dl>
@@ -623,7 +548,6 @@ def move_random(gameplay: PipopipetteGameplay) -&gt; tuple[None, None]|tuple[int
 <ul class="">
 <li><code><a title="jeu.engine.PipopipetteAI.PipopipetteAI.evaluate" href="#jeu.engine.PipopipetteAI.PipopipetteAI.evaluate">evaluate</a></code></li>
 <li><code><a title="jeu.engine.PipopipetteAI.PipopipetteAI.get_next_state" href="#jeu.engine.PipopipetteAI.PipopipetteAI.get_next_state">get_next_state</a></code></li>
-<li><code><a title="jeu.engine.PipopipetteAI.PipopipetteAI.get_potential_squares" href="#jeu.engine.PipopipetteAI.PipopipetteAI.get_potential_squares">get_potential_squares</a></code></li>
 <li><code><a title="jeu.engine.PipopipetteAI.PipopipetteAI.move_minmax" href="#jeu.engine.PipopipetteAI.PipopipetteAI.move_minmax">move_minmax</a></code></li>
 <li><code><a title="jeu.engine.PipopipetteAI.PipopipetteAI.move_random" href="#jeu.engine.PipopipetteAI.PipopipetteAI.move_random">move_random</a></code></li>
 </ul>
