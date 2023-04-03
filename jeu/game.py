@@ -210,20 +210,23 @@ def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] =
             new_score: list[int] = gameplay.get_score()
             if old_score[gameplay.current_player_ID] >= new_score[gameplay.current_player_ID]:
                 gameplay.next_player()
-                if mode == gamemode.AI:
-                    old_score = []
-                    while old_score != new_score:
-                        old_score: list[int] = gameplay.get_score()
-                        print(gameplay.game_over())
-                        a_square, a_side = PipopipetteAI.move_minmax(gameplay, depth=3)
-                        if not a_side:
-                            print('Not', a_side)
-                            break
-                        ai, aj = ij_from_square_id(a_square, a_side)  # type: ignore
-                        gameplay.set_player_target(a_square, a_side)  # type: ignore
-                        owned_segments[(ai, aj, a_side)] = gameplay.current_player_ID
-                        new_score: list[int] = gameplay.get_score()
-                    gameplay.next_player()
+                match mode:
+                    case gamemode.AI:
+                        old_score = []
+                        while old_score != new_score:
+                            old_score: list[int] = gameplay.get_score()
+                            print(gameplay.game_over())
+                            a_square, a_side = PipopipetteAI.move_minmax(gameplay, depth=3)
+                            if not a_side:
+                                print('Not', a_side)
+                                break
+                            ai, aj = ij_from_square_id(a_square, a_side)  # type: ignore
+                            gameplay.set_player_target(a_square, a_side)  # type: ignore
+                            owned_segments[(ai, aj, a_side)] = gameplay.current_player_ID
+                            new_score: list[int] = gameplay.get_score()
+                    case gamemode.ONLINE:
+                        raise NotImplementedError("Online multiplayer hasn't been implemented yet.")
+                gameplay.next_player()
                 if "timer" in config and config["timer"] > 0:
                     start_time_in_seconds = time.time()
         else:
