@@ -64,7 +64,12 @@ def main_menu(screen: pygame.surface.Surface):
         )
         
         def play(size: tuple[int, int]):
-            
+            """
+            Display the game mode selection popup and start the game with the chosen mode and board size.
+
+            Args:
+                size (tuple[int, int]): The desired board size as a tuple of width and height.
+            """
             gamemode_popup = Popup(
                 screen=screen,
                 title="Game mode",
@@ -75,6 +80,12 @@ def main_menu(screen: pygame.surface.Surface):
             mode: gamemode
             
             def change_gamemode(new_mode: gamemode):
+                """
+                Update the game mode and close the game mode selection popup.
+
+                Args:
+                    new_mode (gamemode): The new game mode to be set (e.g., LOCAL, AI, or ONLINE).
+                """
                 nonlocal mode
                 mode = new_mode
                 gamemode_popup.close()

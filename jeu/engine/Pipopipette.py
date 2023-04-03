@@ -139,7 +139,12 @@ class Pipopipette():
                     return square.down.owner_ID == -1
         return False
 
-    def copy(self):
+    def copy(self) -> Pipopipette:
+        """Returns a deep copy of this Pipopipette instance.
+
+        Returns:
+            Pipopipette: Copied instance
+        """
         copied_instance = Pipopipette(self.__WIDTH, self.__HEIGHT)
         copied_instance.list_square = [square.copy() for square in self.list_square]
         return copied_instance

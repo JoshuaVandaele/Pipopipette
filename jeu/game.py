@@ -109,6 +109,7 @@ def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] =
         size (tuple[int, int]): Size of the grid to play on
         players (tuple[str, str]): Tuple of usernames to display for the players
         mode (int): Game mode. 0 -> Player vs Player (local), 1 -> Player vs AI, 2 -> Player vs Player (online)
+        config (dict[str, Any]): Configuration
     """
     # Initialize game
     pipo: Pipopipette = Pipopipette(*size)
@@ -238,17 +239,6 @@ def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] =
             # Screen shake / Red tint?
             print(square_id, side, (gi, gj), "is not a valid target!")
 
-    def square_id_from_ij(gi: int, gj: int, side: str) -> int:
-        if side in {'t', 'd'}:
-            square_id: int = gj * gameplay.pipopipette.WIDTH + gi
-            if side == 'd':
-                square_id += gameplay.pipopipette.WIDTH
-        else:
-            square_id: int = gj * gameplay.pipopipette.WIDTH + gi
-            if side == 'r' and gi == gameplay.pipopipette.WIDTH-1:
-                square_id += 1
-        return square_id
-
     def update_board() -> tuple[list[UI], list[pygame.Rect]]:
         """Updates the board
 
@@ -356,10 +346,15 @@ def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] =
         return board_elements, fillers
 
     def player_can_interact() -> bool:
-            return (
-                (gameplay.current_player_ID == 0 and mode in [gamemode.AI, gamemode.ONLINE])
-                or mode == gamemode.LOCAL
-            )
+        """Weither or not the current player is allowed to interact with the board or not
+
+        Returns:
+            bool: True if the player can, False otherwise
+        """
+        return (
+            (gameplay.current_player_ID == 0 and mode in [gamemode.AI, gamemode.ONLINE])
+            or mode == gamemode.LOCAL
+        )
 
     board_elements, fillers = update_board()
     end_update_counter: int = 0
@@ -459,4 +454,5 @@ def game(screen: pygame.surface.Surface, mode: gamemode, size: tuple[int, int] =
                 end_popup.add_rect(player2_score_label, player2_score_rect)
                 end_popup.run()
                 # Exit game loop
+                EXECUTOR.shutdown(wait=True)
                 return

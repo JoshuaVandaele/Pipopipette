@@ -68,6 +68,18 @@ class PipopipetteAI:
         memo = {}
 
         def max_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -> float:
+            """
+            Calculate the maximum value of the game state for the AI player using the minimax algorithm with alpha-beta pruning
+            
+            Args:
+                gameplay (PipopipetteGameplay): The current game state.
+                depth (int): The remaining depth of the search tree.
+                alpha (float): The best value found so far for the AI player (maximizing player) during the search.
+                beta (float): The best value found so far for the opponent (minimizing player) during the search.
+
+            Returns:
+                float: The maximum value of the game state for the AI player.
+            """
             key = (gameplay.game_state_string(), depth, "max")
             if key in memo:
                 return memo[key]
@@ -87,6 +99,18 @@ class PipopipetteAI:
             return value
 
         def min_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -> float:
+            """
+            Calculate the minimum value of the game state for the opponent player using the minimax algorithm with alpha-beta pruning.
+            
+            Args:
+                gameplay (PipopipetteGameplay): The current game state.
+                depth (int): The remaining depth of the search tree.
+                alpha (float): The best value found so far for the AI player (maximizing player) during the search.
+                beta (float): The best value found so far for the opponent (minimizing player) during the search.
+
+            Returns:
+                float: The minimum value of the game state for the opponent player.
+            """
             key = (gameplay.game_state_string(), depth, "min")
             if key in memo:
                 return memo[key]

@@ -72,6 +72,11 @@ class Square:
     def __str__(self: Square) -> str: return f"[id:{self.__ID}(l:{self.__left.owner_ID},r:{self.__right.owner_ID},t{self.__top.owner_ID},d{self.__down.owner_ID}), owner:{self.__square_owner}]"   
     
     def copy(self: Square) -> Square:
+        """Returns a deep copy of this Square instance.
+
+        Returns:
+            Square: Copied instance
+        """
         new_square = Square(id=self.ID)
         new_square.left.owner_ID = self.left.owner_ID
         new_square.right.owner_ID = self.right.owner_ID
