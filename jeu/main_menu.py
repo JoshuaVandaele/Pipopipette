@@ -46,12 +46,11 @@ def main_menu(screen: pygame.surface.Surface):
         +-------------------------+
         
         And the gamemode in this one:
-        +-------------------------+
-        |        Game mode        |
-        |        [ local ]        |
-        |     [ multiplayer ]     |
-        |       [ vs. AI ]        |
-        +-------------------------+
+        +-----------------------------+
+        |          Game mode          |
+        |                             |
+        | [local] [A.I] [multiplayer] |
+        +-----------------------------+
 
         Args:
             screen (_type_): Screen to display the popup on
