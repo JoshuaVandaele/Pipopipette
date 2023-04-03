@@ -84,7 +84,9 @@ class PipopipetteGameplay():
         total_score: int = sum(self.get_score())
 
         return total_score >= self.pipopipette.HEIGHT * self.pipopipette.WIDTH
-        
+
+    def game_state_string(self) -> str:
+        return ''.join(str(square.square_owner) for square in self.pipopipette.list_square)
     
     def copy(self):
         """
