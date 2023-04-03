@@ -1,23 +1,33 @@
-# SAE Pipopipette
+# Pipopipette SAE
+
 ## Contributeurs
-- Vandaele Joshua
 
-- Bodart Jérémy
+- Joshua Vandaele
+- Jérémy Bodart
+- Kevin Sailly
+- Camille Vasseur
+- Romain Fermon
 
-- Sailly Kevin
+## S3 - Pipopipette en mode local
 
-- Vasseur Camille
-
-- Fermon Romain
-## S3
 ### Introduction
-Dans le cadre de la SAE S3, nous avons pour but de créer un jeu Pipopipette jouable à 2 joueurs.
 
-Nous avons pris la décision de développer celui-ci en Python à l'aide de la bibliothèque PyGame.
-### Fonctionnalités requises
-- Le jeu doit être jouable en 1 contre 1
-- Un système de compte et de sauvegarde du nombre de parties gagnées est à mettre en place.
-- La grille de jeu doit être modulable sur plusieurs tailles. (grande, moyenne, petite, personnalisé)
-  
-## S4
-### TBD
+Dans le cadre du projet SAE S3, notre objectif est de développer un jeu Pipopipette pour deux joueurs en mode local. Nous avons choisi d'utiliser Python avec la bibliothèque PyGame pour réaliser ce projet.
+
+### Fonctionnalités clés
+
+- Jeu en mode 1 contre 1 (deux joueurs locaux)
+- Système de compte et sauvegarde du nombre de parties gagnées
+- Grille de jeu modulable avec plusieurs tailles (grande, moyenne, petite, personnalisée)
+
+## S4 - Pipopipette avec IA et mode en ligne
+
+### Introduction
+
+Lors du projet SAE S4, notre mission est d'améliorer le jeu Pipopipette en y ajoutant la possibilité de jouer contre une IA et en mode en ligne.
+
+### Fonctionnalités clés
+
+- Jeu en mode 1 contre 1 avec une IA
+- Jeu en mode 1 contre 1 en ligne
+- Difficulté de l'IA ajustable (Facile, Moyen, Difficile)
