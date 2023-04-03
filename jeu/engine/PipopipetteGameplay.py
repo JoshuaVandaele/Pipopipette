@@ -66,6 +66,11 @@ class PipopipetteGameplay():
             self.__pipopipette.set_side(square_ID, side, self.current_player_ID)
     
     def get_score(self: PipopipetteGameplay) -> list[int]:
+        """Returns the current score of all players in a list
+
+        Returns:
+            list[int]: Scores ordered in a list
+        """
         result: list[int] = [0]*len(self.__LIST_PLAYER)
         for square in self.__pipopipette.list_square:
             if square.square_owner >= 0:
@@ -86,11 +91,18 @@ class PipopipetteGameplay():
         return total_score >= self.pipopipette.HEIGHT * self.pipopipette.WIDTH
 
     def game_state_string(self) -> str:
+        """Current state of the game in a stringified version. Useful for hashing
+
+        Returns:
+            str: Stringified state of the game
+        """
         return ''.join(str(square.square_owner) for square in self.pipopipette.list_square)
     
-    def copy(self):
-        """
-        Returns a deep copy of this PipopipetteGameplay instance.
+    def copy(self) -> PipopipetteGameplay:
+        """Returns a deep copy of this PipopipetteGameplay instance.
+
+        Returns:
+            PipopipetteGameplay: Copied instance
         """
         new_gameplay = PipopipetteGameplay([], pipopipette=self.__pipopipette.copy())
         new_gameplay.__current_player_ID = self.__current_player_ID
