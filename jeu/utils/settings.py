@@ -26,8 +26,8 @@ def integrity_check(settings: dict[str, Any]) -> dict[str, Any]:
 
     if (
         "timer" in settings
-        and (type(settings["timer"]) != int)
-        or (settings["timer"] < 0)
+        and ((type(settings["timer"]) != int)
+        or (settings["timer"] < 0))
     ):
         settings.pop("timer")
     return settings
