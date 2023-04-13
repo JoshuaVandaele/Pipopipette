@@ -12,7 +12,7 @@ from jeu.ui.ui import UI
 from jeu.utils.assets_import import resource_path
 from jeu.utils.font_manager import FontManager
 from jeu.utils import settings
-from jeu.utils.tools import gamemode
+from jeu.utils.tools import gamemode, difficulty
 
 MAX_SIZE = 7
 MIN_SIZE = 2
@@ -76,7 +76,8 @@ def main_menu(screen: pygame.surface.Surface):
                 color="#0575BB",
             )
 
-            mode: gamemode
+            cur_mode: gamemode = gamemode.LOCAL
+            cur_difficulty: difficulty = difficulty.EASY
 
             def change_gamemode(new_mode: gamemode):
                 """
@@ -85,8 +86,8 @@ def main_menu(screen: pygame.surface.Surface):
                 Args:
                     new_mode (gamemode): The new game mode to be set (e.g., LOCAL, AI, or ONLINE).
                 """
-                nonlocal mode
-                mode = new_mode
+                nonlocal cur_mode
+                cur_mode = new_mode
                 gamemode_popup.close()
 
             gammode_popup_local_button = Button(
@@ -136,7 +137,82 @@ def main_menu(screen: pygame.surface.Surface):
             gamemode_popup.add_ui_element(gammode_popup_online_button)
 
             gamemode_popup.run()
-            game(screen, mode=mode, size=size, config=settings.get_settings())  # type: ignore
+            config = settings.get_settings()
+            config["difficulty"] = 0
+            match cur_mode:
+                case gamemode.AI:
+                    difficulty_popup = Popup(
+                        screen=screen,
+                        title="Difficulty",
+                        size=(1280 // 2, 720 // 2.5),
+                        color="#0575BB",
+                    )
+
+                    def change_difficulty(new_difficulty: difficulty):
+                        """
+                        Update the game mode and close the game mode selection popup.
+
+                        Args:
+                            new_mode (gamemode): The new game mode to be set (e.g., LOCAL, AI, or ONLINE).
+                        """
+                        nonlocal cur_difficulty
+                        cur_difficulty = new_difficulty
+                        difficulty_popup.close()
+
+                    difficulty_popup_easy_button = Button(
+                        screen=difficulty_popup.surface,
+                        image=None,
+                        position=(
+                            difficulty_popup.surface.get_size()[0] // 2 * 0.5,
+                            difficulty_popup.surface.get_size()[1] // 1.6,
+                        ),
+                        text="Easy",
+                        font=menu_font.get_font(56),
+                        color="white",
+                        hover_color="black",
+                        action=lambda: change_difficulty(difficulty.EASY),
+                    )
+
+                    difficulty_popup_medium_button = Button(
+                        screen=difficulty_popup.surface,
+                        image=None,
+                        position=(
+                            difficulty_popup.surface.get_size()[0] // 2 * 1,
+                            difficulty_popup.surface.get_size()[1] // 1.6,
+                        ),
+                        text="Medium",
+                        font=menu_font.get_font(56),
+                        color="white",
+                        hover_color="black",
+                        action=lambda: change_difficulty(difficulty.MEDIUM),
+                    )
+
+                    difficulty_popup_hard_button = Button(
+                        screen=difficulty_popup.surface,
+                        image=None,
+                        position=(
+                            difficulty_popup.surface.get_size()[0] // 2 * 1.5,
+                            difficulty_popup.surface.get_size()[1] // 1.6,
+                        ),
+                        text="Hard",
+                        font=menu_font.get_font(56),
+                        color="white",
+                        hover_color="black",
+                        action=lambda: change_difficulty(difficulty.HARD),
+                    )
+
+                    difficulty_popup.add_ui_element(difficulty_popup_easy_button)
+                    difficulty_popup.add_ui_element(difficulty_popup_medium_button)
+                    difficulty_popup.add_ui_element(difficulty_popup_hard_button)
+                    difficulty_popup.run()
+                    config["difficulty"] = cur_difficulty
+                    difficulty_popup.close()
+                case gamemode.ONLINE:
+                    pass
+                    # TODO: Implement Online Support.
+                    #       This will need to prompt the user for an IP and a port to connect to.
+
+            game(screen, mode=cur_mode, size=size, config=config)  # type: ignore
             gamemode_popup.close()
             size_popup.close()
 

@@ -14,7 +14,7 @@ from jeu.ui.ui import UI
 from jeu.utils.assets_import import resource_path
 from jeu.utils.font_manager import FontManager
 from jeu.utils.settings import DEFAULT_SETTINGS
-from jeu.utils.tools import gamemode
+from jeu.utils.tools import gamemode, difficulty
 
 LINE_WIDTH = 9
 HEIGHT_OFFSET = 250
@@ -249,7 +249,10 @@ def game(
                             old_score: list[int] = gameplay.get_score()
                             print(gameplay.game_over())
                             a_square, a_side = PipopipetteAI.move_minmax(
-                                gameplay, depth=3
+                                gameplay,
+                                depth=config["difficulty"]
+                                if "difficulty" in config
+                                else difficulty.MEDIUM,
                             )
                             if not a_side:
                                 print("Not", a_side)
