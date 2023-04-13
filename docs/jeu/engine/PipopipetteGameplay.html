@@ -35,54 +35,68 @@ from jeu.engine.Player.Player import Player
 
 # &lt;========== Class ==========&gt;
 
-class PipopipetteGameplay():
+
+class PipopipetteGameplay:
     &#34;&#34;&#34;
     Class used to manage the players, their score, ect...
     &#34;&#34;&#34;
-    
+
     # &lt;----- init -----&gt;
-    
-    def __init__(self: PipopipetteGameplay, list_player_name: list[str], pipopipette: Pipopipette = Pipopipette()) -&gt; None:
+
+    def __init__(
+        self: PipopipetteGameplay,
+        list_player_name: list[str],
+        pipopipette: Pipopipette = Pipopipette(),
+    ) -&gt; None:
         &#34;&#34;&#34;
         Args:
             listPlayer: A list of players. Should contain a least two Players
             pipopipette: The playground.
         &#34;&#34;&#34;
-        self.__LIST_PLAYER: Final[list[Player]] = [Player(list_player_name[i],i) for i in range(len(list_player_name))]
+        self.__LIST_PLAYER: Final[list[Player]] = [
+            Player(list_player_name[i], i) for i in range(len(list_player_name))
+        ]
         self.__pipopipette: Pipopipette = pipopipette
-        self.__current_player_ID: int = self.__LIST_PLAYER[0].ID if len(self.__LIST_PLAYER) &gt; 0 else 0
-            
+        self.__current_player_ID: int = (
+            self.__LIST_PLAYER[0].ID if len(self.__LIST_PLAYER) &gt; 0 else 0
+        )
+
     # &lt;----- getter -----&gt;
-    
+
     @property
-    def LIST_PLAYER(self: PipopipetteGameplay) -&gt; list[Player]: return self.__LIST_PLAYER
-    
+    def LIST_PLAYER(self: PipopipetteGameplay) -&gt; list[Player]:
+        return self.__LIST_PLAYER
+
     @property
-    def pipopipette(self: PipopipetteGameplay) -&gt; Pipopipette: return self.__pipopipette
-    
+    def pipopipette(self: PipopipetteGameplay) -&gt; Pipopipette:
+        return self.__pipopipette
+
     @property
-    def current_player_ID(self: PipopipetteGameplay) -&gt; int: return self.__current_player_ID
-    
+    def current_player_ID(self: PipopipetteGameplay) -&gt; int:
+        return self.__current_player_ID
+
     # &lt;----- setter -----&gt;
-    
+
     @pipopipette.setter
-    def pipopipette(self: PipopipetteGameplay, pipopipette: Pipopipette) -&gt; None: self.__pipopipette = pipopipette
-    
+    def pipopipette(self: PipopipetteGameplay, pipopipette: Pipopipette) -&gt; None:
+        self.__pipopipette = pipopipette
+
     @current_player_ID.setter
-    def current_player_ID(self: PipopipetteGameplay, current_player_ID) -&gt; None: self.__current_player_ID = current_player_ID
-            
+    def current_player_ID(self: PipopipetteGameplay, current_player_ID) -&gt; None:
+        self.__current_player_ID = current_player_ID
+
     # &lt;----- nextPlayer -----&gt;
-    
+
     def next_player(self: PipopipetteGameplay) -&gt; None:
         &#34;&#34;&#34;
         Will switch to another player.
         &#34;&#34;&#34;
         self.__current_player_ID += 1
-        if self.__current_player_ID % len(self.__LIST_PLAYER) == 0: self.__current_player_ID = 0
-        
-        
+        if self.__current_player_ID % len(self.__LIST_PLAYER) == 0:
+            self.__current_player_ID = 0
+
     # &lt;----- setPlayerTarget -----&gt;
-    
+
     def set_player_target(self: PipopipetteGameplay, square_ID: int, side: str) -&gt; None:
         &#34;&#34;&#34;
         Used to take a Segment of a square
@@ -92,21 +106,21 @@ class PipopipetteGameplay():
         &#34;&#34;&#34;
         if self.__pipopipette.valid_target(square_ID, side):
             self.__pipopipette.set_side(square_ID, side, self.current_player_ID)
-    
+
     def get_score(self: PipopipetteGameplay) -&gt; list[int]:
         &#34;&#34;&#34;Returns the current score of all players in a list
 
         Returns:
             list[int]: Scores ordered in a list
         &#34;&#34;&#34;
-        result: list[int] = [0]*len(self.__LIST_PLAYER)
+        result: list[int] = [0] * len(self.__LIST_PLAYER)
         for square in self.__pipopipette.list_square:
             if square.square_owner &gt;= 0:
                 result[square.square_owner] += 1
         return result
 
     # &lt;----- gameOver -----&gt;
-    
+
     def game_over(self: PipopipetteGameplay) -&gt; bool:
         &#34;&#34;&#34;
         Check if there is a Square without an owner to check if the game ended or not.
@@ -124,8 +138,10 @@ class PipopipetteGameplay():
         Returns:
             str: Stringified state of the game
         &#34;&#34;&#34;
-        return &#39;&#39;.join(str(square.square_owner) for square in self.pipopipette.list_square)
-    
+        return &#34;&#34;.join(
+            str(square.square_owner) for square in self.pipopipette.list_square
+        )
+
     def copy(self) -&gt; PipopipetteGameplay:
         &#34;&#34;&#34;Returns a deep copy of this PipopipetteGameplay instance.
 
@@ -136,7 +152,7 @@ class PipopipetteGameplay():
         new_gameplay.__current_player_ID = self.__current_player_ID
 
         # Make a deep copy of each player object in the list
-        new_gameplay.__LIST_PLAYER = [] # type: ignore
+        new_gameplay.__LIST_PLAYER = []  # type: ignore
         for player in self.__LIST_PLAYER:
             new_player = Player(player.NAME, player.ID, player.score.value)
             new_gameplay.__LIST_PLAYER.append(new_player)
@@ -170,54 +186,67 @@ class PipopipetteGameplay():
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class PipopipetteGameplay():
+<pre><code class="python">class PipopipetteGameplay:
     &#34;&#34;&#34;
     Class used to manage the players, their score, ect...
     &#34;&#34;&#34;
-    
+
     # &lt;----- init -----&gt;
-    
-    def __init__(self: PipopipetteGameplay, list_player_name: list[str], pipopipette: Pipopipette = Pipopipette()) -&gt; None:
+
+    def __init__(
+        self: PipopipetteGameplay,
+        list_player_name: list[str],
+        pipopipette: Pipopipette = Pipopipette(),
+    ) -&gt; None:
         &#34;&#34;&#34;
         Args:
             listPlayer: A list of players. Should contain a least two Players
             pipopipette: The playground.
         &#34;&#34;&#34;
-        self.__LIST_PLAYER: Final[list[Player]] = [Player(list_player_name[i],i) for i in range(len(list_player_name))]
+        self.__LIST_PLAYER: Final[list[Player]] = [
+            Player(list_player_name[i], i) for i in range(len(list_player_name))
+        ]
         self.__pipopipette: Pipopipette = pipopipette
-        self.__current_player_ID: int = self.__LIST_PLAYER[0].ID if len(self.__LIST_PLAYER) &gt; 0 else 0
-            
+        self.__current_player_ID: int = (
+            self.__LIST_PLAYER[0].ID if len(self.__LIST_PLAYER) &gt; 0 else 0
+        )
+
     # &lt;----- getter -----&gt;
-    
+
     @property
-    def LIST_PLAYER(self: PipopipetteGameplay) -&gt; list[Player]: return self.__LIST_PLAYER
-    
+    def LIST_PLAYER(self: PipopipetteGameplay) -&gt; list[Player]:
+        return self.__LIST_PLAYER
+
     @property
-    def pipopipette(self: PipopipetteGameplay) -&gt; Pipopipette: return self.__pipopipette
-    
+    def pipopipette(self: PipopipetteGameplay) -&gt; Pipopipette:
+        return self.__pipopipette
+
     @property
-    def current_player_ID(self: PipopipetteGameplay) -&gt; int: return self.__current_player_ID
-    
+    def current_player_ID(self: PipopipetteGameplay) -&gt; int:
+        return self.__current_player_ID
+
     # &lt;----- setter -----&gt;
-    
+
     @pipopipette.setter
-    def pipopipette(self: PipopipetteGameplay, pipopipette: Pipopipette) -&gt; None: self.__pipopipette = pipopipette
-    
+    def pipopipette(self: PipopipetteGameplay, pipopipette: Pipopipette) -&gt; None:
+        self.__pipopipette = pipopipette
+
     @current_player_ID.setter
-    def current_player_ID(self: PipopipetteGameplay, current_player_ID) -&gt; None: self.__current_player_ID = current_player_ID
-            
+    def current_player_ID(self: PipopipetteGameplay, current_player_ID) -&gt; None:
+        self.__current_player_ID = current_player_ID
+
     # &lt;----- nextPlayer -----&gt;
-    
+
     def next_player(self: PipopipetteGameplay) -&gt; None:
         &#34;&#34;&#34;
         Will switch to another player.
         &#34;&#34;&#34;
         self.__current_player_ID += 1
-        if self.__current_player_ID % len(self.__LIST_PLAYER) == 0: self.__current_player_ID = 0
-        
-        
+        if self.__current_player_ID % len(self.__LIST_PLAYER) == 0:
+            self.__current_player_ID = 0
+
     # &lt;----- setPlayerTarget -----&gt;
-    
+
     def set_player_target(self: PipopipetteGameplay, square_ID: int, side: str) -&gt; None:
         &#34;&#34;&#34;
         Used to take a Segment of a square
@@ -227,21 +256,21 @@ class PipopipetteGameplay():
         &#34;&#34;&#34;
         if self.__pipopipette.valid_target(square_ID, side):
             self.__pipopipette.set_side(square_ID, side, self.current_player_ID)
-    
+
     def get_score(self: PipopipetteGameplay) -&gt; list[int]:
         &#34;&#34;&#34;Returns the current score of all players in a list
 
         Returns:
             list[int]: Scores ordered in a list
         &#34;&#34;&#34;
-        result: list[int] = [0]*len(self.__LIST_PLAYER)
+        result: list[int] = [0] * len(self.__LIST_PLAYER)
         for square in self.__pipopipette.list_square:
             if square.square_owner &gt;= 0:
                 result[square.square_owner] += 1
         return result
 
     # &lt;----- gameOver -----&gt;
-    
+
     def game_over(self: PipopipetteGameplay) -&gt; bool:
         &#34;&#34;&#34;
         Check if there is a Square without an owner to check if the game ended or not.
@@ -259,8 +288,10 @@ class PipopipetteGameplay():
         Returns:
             str: Stringified state of the game
         &#34;&#34;&#34;
-        return &#39;&#39;.join(str(square.square_owner) for square in self.pipopipette.list_square)
-    
+        return &#34;&#34;.join(
+            str(square.square_owner) for square in self.pipopipette.list_square
+        )
+
     def copy(self) -&gt; PipopipetteGameplay:
         &#34;&#34;&#34;Returns a deep copy of this PipopipetteGameplay instance.
 
@@ -271,7 +302,7 @@ class PipopipetteGameplay():
         new_gameplay.__current_player_ID = self.__current_player_ID
 
         # Make a deep copy of each player object in the list
-        new_gameplay.__LIST_PLAYER = [] # type: ignore
+        new_gameplay.__LIST_PLAYER = []  # type: ignore
         for player in self.__LIST_PLAYER:
             new_player = Player(player.NAME, player.ID, player.score.value)
             new_gameplay.__LIST_PLAYER.append(new_player)
@@ -288,7 +319,8 @@ class PipopipetteGameplay():
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def LIST_PLAYER(self: PipopipetteGameplay) -&gt; list[Player]: return self.__LIST_PLAYER</code></pre>
+def LIST_PLAYER(self: PipopipetteGameplay) -&gt; list[Player]:
+    return self.__LIST_PLAYER</code></pre>
 </details>
 </dd>
 <dt id="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.current_player_ID"><code class="name">var <span class="ident">current_player_ID</span> : int</code></dt>
@@ -299,7 +331,8 @@ def LIST_PLAYER(self: PipopipetteGameplay) -&gt; list[Player]: return self.__LIS
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def current_player_ID(self: PipopipetteGameplay) -&gt; int: return self.__current_player_ID</code></pre>
+def current_player_ID(self: PipopipetteGameplay) -&gt; int:
+    return self.__current_player_ID</code></pre>
 </details>
 </dd>
 <dt id="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.pipopipette"><code class="name">var <span class="ident">pipopipette</span> : <a title="jeu.engine.Pipopipette.Pipopipette" href="Pipopipette.html#jeu.engine.Pipopipette.Pipopipette">Pipopipette</a></code></dt>
@@ -310,7 +343,8 @@ def current_player_ID(self: PipopipetteGameplay) -&gt; int: return self.__curren
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def pipopipette(self: PipopipetteGameplay) -&gt; Pipopipette: return self.__pipopipette</code></pre>
+def pipopipette(self: PipopipetteGameplay) -&gt; Pipopipette:
+    return self.__pipopipette</code></pre>
 </details>
 </dd>
 </dl>
@@ -340,7 +374,7 @@ def pipopipette(self: PipopipetteGameplay) -&gt; Pipopipette: return self.__pipo
     new_gameplay.__current_player_ID = self.__current_player_ID
 
     # Make a deep copy of each player object in the list
-    new_gameplay.__LIST_PLAYER = [] # type: ignore
+    new_gameplay.__LIST_PLAYER = []  # type: ignore
     for player in self.__LIST_PLAYER:
         new_player = Player(player.NAME, player.ID, player.score.value)
         new_gameplay.__LIST_PLAYER.append(new_player)
@@ -391,7 +425,9 @@ def pipopipette(self: PipopipetteGameplay) -&gt; Pipopipette: return self.__pipo
     Returns:
         str: Stringified state of the game
     &#34;&#34;&#34;
-    return &#39;&#39;.join(str(square.square_owner) for square in self.pipopipette.list_square)</code></pre>
+    return &#34;&#34;.join(
+        str(square.square_owner) for square in self.pipopipette.list_square
+    )</code></pre>
 </details>
 </dd>
 <dt id="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.get_score"><code class="name flex">
@@ -414,7 +450,7 @@ def pipopipette(self: PipopipetteGameplay) -&gt; Pipopipette: return self.__pipo
     Returns:
         list[int]: Scores ordered in a list
     &#34;&#34;&#34;
-    result: list[int] = [0]*len(self.__LIST_PLAYER)
+    result: list[int] = [0] * len(self.__LIST_PLAYER)
     for square in self.__pipopipette.list_square:
         if square.square_owner &gt;= 0:
             result[square.square_owner] += 1
@@ -435,7 +471,8 @@ def pipopipette(self: PipopipetteGameplay) -&gt; Pipopipette: return self.__pipo
     Will switch to another player.
     &#34;&#34;&#34;
     self.__current_player_ID += 1
-    if self.__current_player_ID % len(self.__LIST_PLAYER) == 0: self.__current_player_ID = 0</code></pre>
+    if self.__current_player_ID % len(self.__LIST_PLAYER) == 0:
+        self.__current_player_ID = 0</code></pre>
 </details>
 </dd>
 <dt id="jeu.engine.PipopipetteGameplay.PipopipetteGameplay.set_player_target"><code class="name flex">

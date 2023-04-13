@@ -34,15 +34,16 @@ from jeu.engine.Player.Score import Score
 
 # &lt;========== Class ==========&gt;
 
-class Player():
+
+class Player:
     &#34;&#34;&#34;
     Represent the player. This class holds all the methods that allow the player to interact with the game.
     &#34;&#34;&#34;
-    
+
     # &lt;----- init -----&gt;
-    
+
     def __init__(self: Player, name: str, id: int, score_value: int = 0) -&gt; None:
-        &#34;&#34;&#34;&#34;
+        &#34;&#34;&#34;
         Create a new player.
         Args:
             name (str): The name of this user.
@@ -51,29 +52,34 @@ class Player():
         self.__NAME: Final[str] = name
         self.__ID: Final[int] = id
         self.__score: Score = Score(score_value)
-    
-    # &lt;----- getter -----&gt; 
-    
-    @property
-    def NAME(self: Player) -&gt; str: return self.__NAME
-    &#34;&#34;&#34;
-    Define the name of this player
-    &#34;&#34;&#34;
+
+    # &lt;----- getter -----&gt;
 
     @property
-    def ID(self: Player) -&gt; int: return self.__ID
-    
+    def NAME(self: Player) -&gt; str:
+        &#34;&#34;&#34;
+        Define the name of this player
+        &#34;&#34;&#34;
+        return self.__NAME
+
     @property
-    def score(self: Player) -&gt; Score: return self.__score
-    
+    def ID(self: Player) -&gt; int:
+        return self.__ID
+
+    @property
+    def score(self: Player) -&gt; Score:
+        return self.__score
+
     # &lt;----- setter -----&gt;
-    
+
     @score.setter
-    def score(self: Player, new_score: Score) -&gt; None: self.__score = new_score 
-    
+    def score(self: Player, new_score: Score) -&gt; None:
+        self.__score = new_score
+
     # &lt;----- str -----&gt;
-    
-    def __str__(self: Player) -&gt; str: return f&#34;{self.__NAME} {self.__score}&#34;</code></pre>
+
+    def __str__(self: Player) -&gt; str:
+        return f&#34;{self.__NAME} {self.__score}&#34;</code></pre>
 </details>
 </section>
 <section>
@@ -91,8 +97,7 @@ class Player():
 </code></dt>
 <dd>
 <div class="desc"><p>Represent the player. This class holds all the methods that allow the player to interact with the game.</p>
-<p>"
-Create a new player.</p>
+<p>Create a new player.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
@@ -104,15 +109,15 @@ Create a new player.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Player():
+<pre><code class="python">class Player:
     &#34;&#34;&#34;
     Represent the player. This class holds all the methods that allow the player to interact with the game.
     &#34;&#34;&#34;
-    
+
     # &lt;----- init -----&gt;
-    
+
     def __init__(self: Player, name: str, id: int, score_value: int = 0) -&gt; None:
-        &#34;&#34;&#34;&#34;
+        &#34;&#34;&#34;
         Create a new player.
         Args:
             name (str): The name of this user.
@@ -121,29 +126,34 @@ Create a new player.</p>
         self.__NAME: Final[str] = name
         self.__ID: Final[int] = id
         self.__score: Score = Score(score_value)
-    
-    # &lt;----- getter -----&gt; 
-    
-    @property
-    def NAME(self: Player) -&gt; str: return self.__NAME
-    &#34;&#34;&#34;
-    Define the name of this player
-    &#34;&#34;&#34;
+
+    # &lt;----- getter -----&gt;
 
     @property
-    def ID(self: Player) -&gt; int: return self.__ID
-    
+    def NAME(self: Player) -&gt; str:
+        &#34;&#34;&#34;
+        Define the name of this player
+        &#34;&#34;&#34;
+        return self.__NAME
+
     @property
-    def score(self: Player) -&gt; Score: return self.__score
-    
+    def ID(self: Player) -&gt; int:
+        return self.__ID
+
+    @property
+    def score(self: Player) -&gt; Score:
+        return self.__score
+
     # &lt;----- setter -----&gt;
-    
+
     @score.setter
-    def score(self: Player, new_score: Score) -&gt; None: self.__score = new_score 
-    
+    def score(self: Player, new_score: Score) -&gt; None:
+        self.__score = new_score
+
     # &lt;----- str -----&gt;
-    
-    def __str__(self: Player) -&gt; str: return f&#34;{self.__NAME} {self.__score}&#34;</code></pre>
+
+    def __str__(self: Player) -&gt; str:
+        return f&#34;{self.__NAME} {self.__score}&#34;</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
@@ -155,18 +165,23 @@ Create a new player.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def ID(self: Player) -&gt; int: return self.__ID</code></pre>
+def ID(self: Player) -&gt; int:
+    return self.__ID</code></pre>
 </details>
 </dd>
 <dt id="jeu.engine.Player.Player.Player.NAME"><code class="name">var <span class="ident">NAME</span> : str</code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Define the name of this player</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def NAME(self: Player) -&gt; str: return self.__NAME</code></pre>
+def NAME(self: Player) -&gt; str:
+    &#34;&#34;&#34;
+    Define the name of this player
+    &#34;&#34;&#34;
+    return self.__NAME</code></pre>
 </details>
 </dd>
 <dt id="jeu.engine.Player.Player.Player.score"><code class="name">var <span class="ident">score</span> : <a title="jeu.engine.Player.Score.Score" href="Score.html#jeu.engine.Player.Score.Score">Score</a></code></dt>
@@ -177,7 +192,8 @@ def NAME(self: Player) -&gt; str: return self.__NAME</code></pre>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def score(self: Player) -&gt; Score: return self.__score</code></pre>
+def score(self: Player) -&gt; Score:
+    return self.__score</code></pre>
 </details>
 </dd>
 </dl>

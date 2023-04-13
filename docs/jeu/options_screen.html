@@ -37,6 +37,7 @@ from jeu.utils.font_manager import FontManager
 
 MARGIN = 32
 
+
 def options_screen(screen: pygame.surface.Surface):
     &#34;&#34;&#34;Options screen
 
@@ -44,14 +45,20 @@ def options_screen(screen: pygame.surface.Surface):
         screen (pygame.surface.Surface): Screen to display the menu on
     &#34;&#34;&#34;
     current_settings = settings.get_settings()
-    options_font: FontManager = FontManager(resource_path(&#34;jeu/assets/fonts/Truculenta.ttf&#34;))
+    options_font: FontManager = FontManager(
+        resource_path(&#34;jeu/assets/fonts/Truculenta.ttf&#34;)
+    )
 
     # Initializing on-screen elements #
-    options_popup: Popup = Popup(screen, &#34;Options&#34;, (screen.get_width()*0.85, screen.get_height()*0.8), &#34;#0575BB&#34;)
+    options_popup: Popup = Popup(
+        screen,
+        &#34;Options&#34;,
+        (screen.get_width() * 0.85, screen.get_height() * 0.8),
+        &#34;#0575BB&#34;,
+    )
 
     def close_popup():
-        &#34;&#34;&#34;Overwritten close button handler for the popup that saves the settings upon clicking it
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Overwritten close button handler for the popup that saves the settings upon clicking it&#34;&#34;&#34;
         config = {}
         if timer := timer_textbox.text:
             config[&#34;timer&#34;] = int(timer)
@@ -60,34 +67,38 @@ def options_screen(screen: pygame.surface.Surface):
 
     # Edit close button to make it save
     options_popup.elements[0] = Button(
-            screen=options_popup.surface,
-            image=pygame.image.load(resource_path(&#34;jeu/assets/images/close.png&#34;)),
-            position=(options_popup.surface.get_width()-25, 25),
-            text=&#34; &#34;,
-            font=options_popup.font.get_font(50),
-            color=&#34;#000000&#34;,
-            hover_color=&#34;#555555&#34;,
-            action=close_popup,
-            detection_offset=options_popup.offset
-        )
+        screen=options_popup.surface,
+        image=pygame.image.load(resource_path(&#34;jeu/assets/images/close.png&#34;)),
+        position=(options_popup.surface.get_width() - 25, 25),
+        text=&#34; &#34;,
+        font=options_popup.font.get_font(50),
+        color=&#34;#000000&#34;,
+        hover_color=&#34;#555555&#34;,
+        action=close_popup,
+        detection_offset=options_popup.offset,
+    )
 
-    timer_label: pygame.surface.Surface = options_font.get_font(56).render(&#34;Timer&#34;, True, &#34;white&#34;)
-    timer_label_rect: pygame.rect.Rect = timer_label.get_rect(center=(200//2+MARGIN, options_popup.surface.get_size()[1]//2*0.45))
-    
+    timer_label: pygame.surface.Surface = options_font.get_font(56).render(
+        &#34;Timer&#34;, True, &#34;white&#34;
+    )
+    timer_label_rect: pygame.rect.Rect = timer_label.get_rect(
+        center=(200 // 2 + MARGIN, options_popup.surface.get_size()[1] // 2 * 0.45)
+    )
+
     default_timer: int = settings.DEFAULT_SETTINGS[&#34;timer&#34;]
     timer_textbox: Textbox = Textbox(
-            screen=options_popup.surface,
-            position=(200//2+MARGIN, options_popup.surface.get_size()[1]//2*0.7),
-            placeholder_text=f&#34;{default_timer} seconds&#34;,
-            placeholder_color=&#34;#424242&#34;,
-            size=(200, 75),
-            font=options_font.get_font(40),
-            text_color=&#34;black&#34;,
-            background_color=&#34;white&#34;,
-            max_char = 3,
-            accepted_chars = [&#34;0&#34;,&#34;1&#34;,&#34;2&#34;,&#34;3&#34;,&#34;4&#34;,&#34;5&#34;,&#34;6&#34;,&#34;7&#34;,&#34;8&#34;,&#34;9&#34;]
-        )
-    
+        screen=options_popup.surface,
+        position=(200 // 2 + MARGIN, options_popup.surface.get_size()[1] // 2 * 0.7),
+        placeholder_text=f&#34;{default_timer} seconds&#34;,
+        placeholder_color=&#34;#424242&#34;,
+        size=(200, 75),
+        font=options_font.get_font(40),
+        text_color=&#34;black&#34;,
+        background_color=&#34;white&#34;,
+        max_char=3,
+        accepted_chars=[&#34;0&#34;, &#34;1&#34;, &#34;2&#34;, &#34;3&#34;, &#34;4&#34;, &#34;5&#34;, &#34;6&#34;, &#34;7&#34;, &#34;8&#34;, &#34;9&#34;],
+    )
+
     if &#34;timer&#34; in current_settings and current_settings[&#34;timer&#34;] != default_timer:
         timer_textbox.text = str(current_settings[&#34;timer&#34;])
 
@@ -124,14 +135,20 @@ def options_screen(screen: pygame.surface.Surface):
         screen (pygame.surface.Surface): Screen to display the menu on
     &#34;&#34;&#34;
     current_settings = settings.get_settings()
-    options_font: FontManager = FontManager(resource_path(&#34;jeu/assets/fonts/Truculenta.ttf&#34;))
+    options_font: FontManager = FontManager(
+        resource_path(&#34;jeu/assets/fonts/Truculenta.ttf&#34;)
+    )
 
     # Initializing on-screen elements #
-    options_popup: Popup = Popup(screen, &#34;Options&#34;, (screen.get_width()*0.85, screen.get_height()*0.8), &#34;#0575BB&#34;)
+    options_popup: Popup = Popup(
+        screen,
+        &#34;Options&#34;,
+        (screen.get_width() * 0.85, screen.get_height() * 0.8),
+        &#34;#0575BB&#34;,
+    )
 
     def close_popup():
-        &#34;&#34;&#34;Overwritten close button handler for the popup that saves the settings upon clicking it
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Overwritten close button handler for the popup that saves the settings upon clicking it&#34;&#34;&#34;
         config = {}
         if timer := timer_textbox.text:
             config[&#34;timer&#34;] = int(timer)
@@ -140,34 +157,38 @@ def options_screen(screen: pygame.surface.Surface):
 
     # Edit close button to make it save
     options_popup.elements[0] = Button(
-            screen=options_popup.surface,
-            image=pygame.image.load(resource_path(&#34;jeu/assets/images/close.png&#34;)),
-            position=(options_popup.surface.get_width()-25, 25),
-            text=&#34; &#34;,
-            font=options_popup.font.get_font(50),
-            color=&#34;#000000&#34;,
-            hover_color=&#34;#555555&#34;,
-            action=close_popup,
-            detection_offset=options_popup.offset
-        )
+        screen=options_popup.surface,
+        image=pygame.image.load(resource_path(&#34;jeu/assets/images/close.png&#34;)),
+        position=(options_popup.surface.get_width() - 25, 25),
+        text=&#34; &#34;,
+        font=options_popup.font.get_font(50),
+        color=&#34;#000000&#34;,
+        hover_color=&#34;#555555&#34;,
+        action=close_popup,
+        detection_offset=options_popup.offset,
+    )
 
-    timer_label: pygame.surface.Surface = options_font.get_font(56).render(&#34;Timer&#34;, True, &#34;white&#34;)
-    timer_label_rect: pygame.rect.Rect = timer_label.get_rect(center=(200//2+MARGIN, options_popup.surface.get_size()[1]//2*0.45))
-    
+    timer_label: pygame.surface.Surface = options_font.get_font(56).render(
+        &#34;Timer&#34;, True, &#34;white&#34;
+    )
+    timer_label_rect: pygame.rect.Rect = timer_label.get_rect(
+        center=(200 // 2 + MARGIN, options_popup.surface.get_size()[1] // 2 * 0.45)
+    )
+
     default_timer: int = settings.DEFAULT_SETTINGS[&#34;timer&#34;]
     timer_textbox: Textbox = Textbox(
-            screen=options_popup.surface,
-            position=(200//2+MARGIN, options_popup.surface.get_size()[1]//2*0.7),
-            placeholder_text=f&#34;{default_timer} seconds&#34;,
-            placeholder_color=&#34;#424242&#34;,
-            size=(200, 75),
-            font=options_font.get_font(40),
-            text_color=&#34;black&#34;,
-            background_color=&#34;white&#34;,
-            max_char = 3,
-            accepted_chars = [&#34;0&#34;,&#34;1&#34;,&#34;2&#34;,&#34;3&#34;,&#34;4&#34;,&#34;5&#34;,&#34;6&#34;,&#34;7&#34;,&#34;8&#34;,&#34;9&#34;]
-        )
-    
+        screen=options_popup.surface,
+        position=(200 // 2 + MARGIN, options_popup.surface.get_size()[1] // 2 * 0.7),
+        placeholder_text=f&#34;{default_timer} seconds&#34;,
+        placeholder_color=&#34;#424242&#34;,
+        size=(200, 75),
+        font=options_font.get_font(40),
+        text_color=&#34;black&#34;,
+        background_color=&#34;white&#34;,
+        max_char=3,
+        accepted_chars=[&#34;0&#34;, &#34;1&#34;, &#34;2&#34;, &#34;3&#34;, &#34;4&#34;, &#34;5&#34;, &#34;6&#34;, &#34;7&#34;, &#34;8&#34;, &#34;9&#34;],
+    )
+
     if &#34;timer&#34; in current_settings and current_settings[&#34;timer&#34;] != default_timer:
         timer_textbox.text = str(current_settings[&#34;timer&#34;])
 

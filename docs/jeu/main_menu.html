@@ -40,10 +40,11 @@ from jeu.ui.ui import UI
 from jeu.utils.assets_import import resource_path
 from jeu.utils.font_manager import FontManager
 from jeu.utils import settings
-from jeu.utils.tools import gamemode
+from jeu.utils.tools import gamemode, difficulty
 
 MAX_SIZE = 7
 MIN_SIZE = 2
+
 
 def main_menu(screen: pygame.surface.Surface):
     &#34;&#34;&#34;Main menu of the game.
@@ -55,24 +56,25 @@ def main_menu(screen: pygame.surface.Surface):
 
     pygame.display.set_caption(&#34;Menu&#34;)
 
-    menu_font: FontManager = FontManager(resource_path(&#34;jeu/assets/fonts/Truculenta.ttf&#34;))
+    menu_font: FontManager = FontManager(
+        resource_path(&#34;jeu/assets/fonts/Truculenta.ttf&#34;)
+    )
 
     uninteraction_timer = 0
 
     def quit():
-        &#34;&#34;&#34;Quits the program
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Quits the program&#34;&#34;&#34;
         pygame.quit()
         sys.exit()
 
-    def play_button_handler(screen): 
-        &#34;&#34;&#34; Popup that lets you select a size in this format:
+    def play_button_handler(screen):
+        &#34;&#34;&#34;Popup that lets you select a size in this format:
         +-------------------------+
         |          Size           |
         | (Size) X (Size)  [OK]   |
         | [ 3x3 ] [ 5x5 ] [ 7x7 ] |
         +-------------------------+
-        
+
         And the gamemode in this one:
         +-----------------------------+
         |          Game mode          |
@@ -85,12 +87,9 @@ def main_menu(screen: pygame.surface.Surface):
         &#34;&#34;&#34;
         # Create the size popup
         size_popup = Popup(
-            screen=screen,
-            title=&#34;Size&#34;,
-            size=(1280//2, 720//2.5),
-            color=&#34;#0575BB&#34;
+            screen=screen, title=&#34;Size&#34;, size=(1280 // 2, 720 // 2.5), color=&#34;#0575BB&#34;
         )
-        
+
         def play(size: tuple[int, int]):
             &#34;&#34;&#34;
             Display the game mode selection popup and start the game with the chosen mode and board size.
@@ -101,12 +100,13 @@ def main_menu(screen: pygame.surface.Surface):
             gamemode_popup = Popup(
                 screen=screen,
                 title=&#34;Game mode&#34;,
-                size=(1280//2, 720//2.5),
-                color=&#34;#0575BB&#34;
+                size=(1280 // 2, 720 // 2.5),
+                color=&#34;#0575BB&#34;,
             )
-            
-            mode: gamemode
-            
+
+            cur_mode: gamemode = gamemode.LOCAL
+            cur_difficulty: difficulty = difficulty.EASY
+
             def change_gamemode(new_mode: gamemode):
                 &#34;&#34;&#34;
                 Update the game mode and close the game mode selection popup.
@@ -114,116 +114,213 @@ def main_menu(screen: pygame.surface.Surface):
                 Args:
                     new_mode (gamemode): The new game mode to be set (e.g., LOCAL, AI, or ONLINE).
                 &#34;&#34;&#34;
-                nonlocal mode
-                mode = new_mode
+                nonlocal cur_mode
+                cur_mode = new_mode
                 gamemode_popup.close()
-            
+
             gammode_popup_local_button = Button(
                 screen=gamemode_popup.surface,
                 image=None,
-                position=(gamemode_popup.surface.get_size()[0]//2*0.5, gamemode_popup.surface.get_size()[1]//1.6),
+                position=(
+                    gamemode_popup.surface.get_size()[0] // 2 * 0.5,
+                    gamemode_popup.surface.get_size()[1] // 1.6,
+                ),
                 text=&#34;LOCAL&#34;,
                 font=menu_font.get_font(56),
                 color=&#34;white&#34;,
                 hover_color=&#34;black&#34;,
-                action = lambda: change_gamemode(gamemode.LOCAL)
+                action=lambda: change_gamemode(gamemode.LOCAL),
             )
-            
+
             gammode_popup_ai_button = Button(
                 screen=gamemode_popup.surface,
                 image=None,
-                position=(gamemode_popup.surface.get_size()[0]//2*1, gamemode_popup.surface.get_size()[1]//1.6),
+                position=(
+                    gamemode_popup.surface.get_size()[0] // 2 * 1,
+                    gamemode_popup.surface.get_size()[1] // 1.6,
+                ),
                 text=&#34;AI&#34;,
                 font=menu_font.get_font(56),
                 color=&#34;white&#34;,
                 hover_color=&#34;black&#34;,
-                action = lambda: change_gamemode(gamemode.AI)
+                action=lambda: change_gamemode(gamemode.AI),
             )
-            
+
             gammode_popup_online_button = Button(
                 screen=gamemode_popup.surface,
                 image=None,
-                position=(gamemode_popup.surface.get_size()[0]//2*1.5, gamemode_popup.surface.get_size()[1]//1.6),
+                position=(
+                    gamemode_popup.surface.get_size()[0] // 2 * 1.5,
+                    gamemode_popup.surface.get_size()[1] // 1.6,
+                ),
                 text=&#34;ONLINE&#34;,
                 font=menu_font.get_font(56),
                 color=&#34;white&#34;,
                 hover_color=&#34;black&#34;,
-                action = lambda: change_gamemode(gamemode.ONLINE)
+                action=lambda: change_gamemode(gamemode.ONLINE),
             )
-            
+
             gamemode_popup.add_ui_element(gammode_popup_ai_button)
             gamemode_popup.add_ui_element(gammode_popup_local_button)
             gamemode_popup.add_ui_element(gammode_popup_online_button)
-            
+
             gamemode_popup.run()
-            game(screen, mode=mode, size=size, config=settings.get_settings()) #type: ignore
-            gamemode_popup.close() 
+            config = settings.get_settings()
+            config[&#34;difficulty&#34;] = 0
+            match cur_mode:
+                case gamemode.AI:
+                    difficulty_popup = Popup(
+                        screen=screen,
+                        title=&#34;Difficulty&#34;,
+                        size=(1280 // 2, 720 // 2.5),
+                        color=&#34;#0575BB&#34;,
+                    )
+
+                    def change_difficulty(new_difficulty: difficulty):
+                        &#34;&#34;&#34;
+                        Update the game mode and close the game mode selection popup.
+
+                        Args:
+                            new_mode (gamemode): The new game mode to be set (e.g., LOCAL, AI, or ONLINE).
+                        &#34;&#34;&#34;
+                        nonlocal cur_difficulty
+                        cur_difficulty = new_difficulty
+                        difficulty_popup.close()
+
+                    difficulty_popup_easy_button = Button(
+                        screen=difficulty_popup.surface,
+                        image=None,
+                        position=(
+                            difficulty_popup.surface.get_size()[0] // 2 * 0.5,
+                            difficulty_popup.surface.get_size()[1] // 1.6,
+                        ),
+                        text=&#34;Easy&#34;,
+                        font=menu_font.get_font(56),
+                        color=&#34;white&#34;,
+                        hover_color=&#34;black&#34;,
+                        action=lambda: change_difficulty(difficulty.EASY),
+                    )
+
+                    difficulty_popup_medium_button = Button(
+                        screen=difficulty_popup.surface,
+                        image=None,
+                        position=(
+                            difficulty_popup.surface.get_size()[0] // 2 * 1,
+                            difficulty_popup.surface.get_size()[1] // 1.6,
+                        ),
+                        text=&#34;Medium&#34;,
+                        font=menu_font.get_font(56),
+                        color=&#34;white&#34;,
+                        hover_color=&#34;black&#34;,
+                        action=lambda: change_difficulty(difficulty.MEDIUM),
+                    )
+
+                    difficulty_popup_hard_button = Button(
+                        screen=difficulty_popup.surface,
+                        image=None,
+                        position=(
+                            difficulty_popup.surface.get_size()[0] // 2 * 1.5,
+                            difficulty_popup.surface.get_size()[1] // 1.6,
+                        ),
+                        text=&#34;Hard&#34;,
+                        font=menu_font.get_font(56),
+                        color=&#34;white&#34;,
+                        hover_color=&#34;black&#34;,
+                        action=lambda: change_difficulty(difficulty.HARD),
+                    )
+
+                    difficulty_popup.add_ui_element(difficulty_popup_easy_button)
+                    difficulty_popup.add_ui_element(difficulty_popup_medium_button)
+                    difficulty_popup.add_ui_element(difficulty_popup_hard_button)
+                    difficulty_popup.run()
+                    config[&#34;difficulty&#34;] = cur_difficulty
+                    difficulty_popup.close()
+                case gamemode.ONLINE:
+                    pass
+                    # TODO: Implement Online Support.
+                    #       This will need to prompt the user for an IP and a port to connect to.
+
+            game(screen, mode=cur_mode, size=size, config=config)  # type: ignore
+            gamemode_popup.close()
             size_popup.close()
 
         # Create the rightmost size select button
         size_popup_3x3_button = Button(
             screen=size_popup.surface,
             image=None,
-            position=(size_popup.surface.get_size()[0]//2*0.5, size_popup.surface.get_size()[1]//1.25),
+            position=(
+                size_popup.surface.get_size()[0] // 2 * 0.5,
+                size_popup.surface.get_size()[1] // 1.25,
+            ),
             text=&#34;3x3&#34;,
             font=menu_font.get_font(56),
             color=&#34;white&#34;,
             hover_color=&#34;black&#34;,
-            action = lambda: play((3, 3)) 
+            action=lambda: play((3, 3)),
         )
 
         # Create the center size select button
         size_popup_5x5_button = Button(
             screen=size_popup.surface,
             image=None,
-            position=(size_popup.surface.get_size()[0]//2, size_popup.surface.get_size()[1]//1.25),
+            position=(
+                size_popup.surface.get_size()[0] // 2,
+                size_popup.surface.get_size()[1] // 1.25,
+            ),
             text=&#34;5x5&#34;,
             font=menu_font.get_font(56),
             color=&#34;white&#34;,
             hover_color=&#34;black&#34;,
-            action = lambda: play((5, 5)) 
+            action=lambda: play((5, 5)),
         )
-
 
         # Create the leftmost size select button
         size_popup_7x7_button = Button(
             screen=size_popup.surface,
             image=None,
-            position=(size_popup.surface.get_size()[0]//2*1.5, size_popup.surface.get_size()[1]//1.25),
+            position=(
+                size_popup.surface.get_size()[0] // 2 * 1.5,
+                size_popup.surface.get_size()[1] // 1.25,
+            ),
             text=&#34;7x7&#34;,
             font=menu_font.get_font(56),
             color=&#34;white&#34;,
             hover_color=&#34;black&#34;,
-            action = lambda: play((7, 7)) 
+            action=lambda: play((7, 7)),
         )
-
 
         # Create the x-size select textbox
         size_popup_custom_size_x_textbox = Textbox(
             screen=size_popup.surface,
-            position=(size_popup.surface.get_size()[0]//2*0.55, size_popup.surface.get_size()[1]//2),
-            placeholder_text=F&#34;{MIN_SIZE}-{MAX_SIZE}&#34;,
+            position=(
+                size_popup.surface.get_size()[0] // 2 * 0.55,
+                size_popup.surface.get_size()[1] // 2,
+            ),
+            placeholder_text=f&#34;{MIN_SIZE}-{MAX_SIZE}&#34;,
             placeholder_color=&#34;#424242&#34;,
             size=(125, 75),
             font=menu_font.get_font(56),
             text_color=&#34;black&#34;,
             background_color=&#34;white&#34;,
-            max_char = 2,
-            accepted_chars = [&#34;0&#34;,&#34;1&#34;,&#34;2&#34;,&#34;3&#34;,&#34;4&#34;,&#34;5&#34;,&#34;6&#34;,&#34;7&#34;,&#34;8&#34;,&#34;9&#34;]
+            max_char=2,
+            accepted_chars=[&#34;0&#34;, &#34;1&#34;, &#34;2&#34;, &#34;3&#34;, &#34;4&#34;, &#34;5&#34;, &#34;6&#34;, &#34;7&#34;, &#34;8&#34;, &#34;9&#34;],
         )
 
         # Create the y-size select textbox
         size_popup_custom_size_y_textbox = Textbox(
             screen=size_popup.surface,
-            position=(size_popup.surface.get_size()[0]//2*1.15, size_popup.surface.get_size()[1]//2),
-            placeholder_text=F&#34;{MIN_SIZE}-{MAX_SIZE}&#34;,
+            position=(
+                size_popup.surface.get_size()[0] // 2 * 1.15,
+                size_popup.surface.get_size()[1] // 2,
+            ),
+            placeholder_text=f&#34;{MIN_SIZE}-{MAX_SIZE}&#34;,
             placeholder_color=&#34;#424242&#34;,
             size=(125, 75),
             font=menu_font.get_font(56),
             text_color=&#34;black&#34;,
             background_color=&#34;white&#34;,
-            max_char = 2,
-            accepted_chars = [&#34;0&#34;,&#34;1&#34;,&#34;2&#34;,&#34;3&#34;,&#34;4&#34;,&#34;5&#34;,&#34;6&#34;,&#34;7&#34;,&#34;8&#34;,&#34;9&#34;]
+            max_char=2,
+            accepted_chars=[&#34;0&#34;, &#34;1&#34;, &#34;2&#34;, &#34;3&#34;, &#34;4&#34;, &#34;5&#34;, &#34;6&#34;, &#34;7&#34;, &#34;8&#34;, &#34;9&#34;],
         )
 
         def confirm_custom_size_button_handler():
@@ -236,43 +333,45 @@ def main_menu(screen: pygame.surface.Surface):
             y_size: int = 0
             x_size_text: str = size_popup_custom_size_x_textbox.text
             y_size_text: str = size_popup_custom_size_y_textbox.text
-            if x_size_text:
-                x_size = int(x_size_text)
-            else:
-                x_size = 5
-            
-            if y_size_text:
-                y_size = int(y_size_text)
-            else:
-                y_size = 5
-            
+            x_size = int(x_size_text) if x_size_text else 5
+            y_size = int(y_size_text) if y_size_text else 5
             if x_size &gt; MAX_SIZE:
                 x_size = MAX_SIZE
             elif x_size &lt; MIN_SIZE:
                 x_size = MIN_SIZE
-            
+
             if y_size &gt; MAX_SIZE:
                 y_size = MAX_SIZE
             elif y_size &lt; MIN_SIZE:
                 y_size = MIN_SIZE
-            
-            play((x_size, y_size)) 
+
+            play((x_size, y_size))
 
         # Create the custom size confirm button
         size_popup_confirm_custom_size_button = Button(
             screen=size_popup.surface,
             image=None,
-            position=(size_popup.surface.get_size()[0]//2*1.5, size_popup.surface.get_size()[1]//2),
+            position=(
+                size_popup.surface.get_size()[0] // 2 * 1.5,
+                size_popup.surface.get_size()[1] // 2,
+            ),
             text=&#34;OK&#34;,
             font=menu_font.get_font(64),
             color=&#34;white&#34;,
             hover_color=&#34;black&#34;,
-            action=confirm_custom_size_button_handler
+            action=confirm_custom_size_button_handler,
         )
 
         # Creates the &#34;X&#34; to be displayed between the two textboxes
-        x_label: pygame.surface.Surface = menu_font.get_font(96).render(f&#34;x&#34;, True, &#34;white&#34;)
-        x_rect: pygame.rect.Rect = x_label.get_rect(center=(size_popup.surface.get_size()[0]//2*0.85, size_popup.surface.get_size()[1]//2*0.95))
+        x_label: pygame.surface.Surface = menu_font.get_font(96).render(
+            &#34;x&#34;, True, &#34;white&#34;
+        )
+        x_rect: pygame.rect.Rect = x_label.get_rect(
+            center=(
+                size_popup.surface.get_size()[0] // 2 * 0.85,
+                size_popup.surface.get_size()[1] // 2 * 0.95,
+            )
+        )
 
         # Add all the created elements to the popup and run it
         size_popup.add_ui_element(size_popup_3x3_button)
@@ -288,10 +387,13 @@ def main_menu(screen: pygame.surface.Surface):
         uninteraction_timer = 10
 
     # Initializing on-screen elements #
-    background: pygame.surface.Surface = pygame.image.load(resource_path(&#34;jeu/assets/images/menu_background.png&#34;))
+    background: pygame.surface.Surface = pygame.image.load(
+        resource_path(&#34;jeu/assets/images/menu_background.png&#34;)
+    )
 
-    menu_text: pygame.surface.Surface = menu_font.get_font(
-        100).render(&#34;PIPOPIPETTE&#34;, True, &#34;#EEEEEE&#34;)
+    menu_text: pygame.surface.Surface = menu_font.get_font(100).render(
+        &#34;PIPOPIPETTE&#34;, True, &#34;#EEEEEE&#34;
+    )
     menu_rect: pygame.rect.Rect = menu_text.get_rect(center=(640, 75))
 
     play_button = Button(
@@ -302,7 +404,7 @@ def main_menu(screen: pygame.surface.Surface):
         font=menu_font.get_font(75),
         color=&#34;#FFFFFF&#34;,
         hover_color=&#34;#d7fcd4&#34;,
-        action=lambda: play_button_handler(screen)
+        action=lambda: play_button_handler(screen),
     )
     options_button = Button(
         screen=screen,
@@ -312,7 +414,7 @@ def main_menu(screen: pygame.surface.Surface):
         font=menu_font.get_font(75),
         color=&#34;#FFFFFF&#34;,
         hover_color=&#34;#d7fcd4&#34;,
-        action=lambda: options_screen(screen)
+        action=lambda: options_screen(screen),
     )
     quit_button = Button(
         screen=screen,
@@ -322,7 +424,7 @@ def main_menu(screen: pygame.surface.Surface):
         font=menu_font.get_font(75),
         color=&#34;#FFFFFF&#34;,
         hover_color=&#34;#d7fcd4&#34;,
-        action=quit
+        action=quit,
     )
 
     def account_button_handler():
@@ -330,16 +432,23 @@ def main_menu(screen: pygame.surface.Surface):
         login_screen(screen)
         uninteraction_timer = 10
 
-    account_button = Button(screen=screen, image=pygame.image.load(resource_path(&#34;jeu/assets/images/User.png&#34;)),
-                            position=(1280-75, 75),
-                            text=&#34; &#34;,
-                            font=menu_font.get_font(75),
-                            color=&#34;#FFFFFF&#34;,
-                            hover_color=&#34;#FFFFFF&#34;,
-                            action=account_button_handler
-                            )
+    account_button = Button(
+        screen=screen,
+        image=pygame.image.load(resource_path(&#34;jeu/assets/images/User.png&#34;)),
+        position=(1280 - 75, 75),
+        text=&#34; &#34;,
+        font=menu_font.get_font(75),
+        color=&#34;#FFFFFF&#34;,
+        hover_color=&#34;#FFFFFF&#34;,
+        action=account_button_handler,
+    )
     # Store all UI elements in a list for easy access
-    menu_buttons: tuple[UI, ...] = (account_button, play_button, options_button, quit_button)
+    menu_buttons: tuple[UI, ...] = (
+        account_button,
+        play_button,
+        options_button,
+        quit_button,
+    )
 
     while True:
         if uninteraction_timer &gt; 0:
@@ -401,24 +510,25 @@ def main_menu(screen: pygame.surface.Surface):
 
     pygame.display.set_caption(&#34;Menu&#34;)
 
-    menu_font: FontManager = FontManager(resource_path(&#34;jeu/assets/fonts/Truculenta.ttf&#34;))
+    menu_font: FontManager = FontManager(
+        resource_path(&#34;jeu/assets/fonts/Truculenta.ttf&#34;)
+    )
 
     uninteraction_timer = 0
 
     def quit():
-        &#34;&#34;&#34;Quits the program
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Quits the program&#34;&#34;&#34;
         pygame.quit()
         sys.exit()
 
-    def play_button_handler(screen): 
-        &#34;&#34;&#34; Popup that lets you select a size in this format:
+    def play_button_handler(screen):
+        &#34;&#34;&#34;Popup that lets you select a size in this format:
         +-------------------------+
         |          Size           |
         | (Size) X (Size)  [OK]   |
         | [ 3x3 ] [ 5x5 ] [ 7x7 ] |
         +-------------------------+
-        
+
         And the gamemode in this one:
         +-----------------------------+
         |          Game mode          |
@@ -431,12 +541,9 @@ def main_menu(screen: pygame.surface.Surface):
         &#34;&#34;&#34;
         # Create the size popup
         size_popup = Popup(
-            screen=screen,
-            title=&#34;Size&#34;,
-            size=(1280//2, 720//2.5),
-            color=&#34;#0575BB&#34;
+            screen=screen, title=&#34;Size&#34;, size=(1280 // 2, 720 // 2.5), color=&#34;#0575BB&#34;
         )
-        
+
         def play(size: tuple[int, int]):
             &#34;&#34;&#34;
             Display the game mode selection popup and start the game with the chosen mode and board size.
@@ -447,12 +554,13 @@ def main_menu(screen: pygame.surface.Surface):
             gamemode_popup = Popup(
                 screen=screen,
                 title=&#34;Game mode&#34;,
-                size=(1280//2, 720//2.5),
-                color=&#34;#0575BB&#34;
+                size=(1280 // 2, 720 // 2.5),
+                color=&#34;#0575BB&#34;,
             )
-            
-            mode: gamemode
-            
+
+            cur_mode: gamemode = gamemode.LOCAL
+            cur_difficulty: difficulty = difficulty.EASY
+
             def change_gamemode(new_mode: gamemode):
                 &#34;&#34;&#34;
                 Update the game mode and close the game mode selection popup.
@@ -460,116 +568,213 @@ def main_menu(screen: pygame.surface.Surface):
                 Args:
                     new_mode (gamemode): The new game mode to be set (e.g., LOCAL, AI, or ONLINE).
                 &#34;&#34;&#34;
-                nonlocal mode
-                mode = new_mode
+                nonlocal cur_mode
+                cur_mode = new_mode
                 gamemode_popup.close()
-            
+
             gammode_popup_local_button = Button(
                 screen=gamemode_popup.surface,
                 image=None,
-                position=(gamemode_popup.surface.get_size()[0]//2*0.5, gamemode_popup.surface.get_size()[1]//1.6),
+                position=(
+                    gamemode_popup.surface.get_size()[0] // 2 * 0.5,
+                    gamemode_popup.surface.get_size()[1] // 1.6,
+                ),
                 text=&#34;LOCAL&#34;,
                 font=menu_font.get_font(56),
                 color=&#34;white&#34;,
                 hover_color=&#34;black&#34;,
-                action = lambda: change_gamemode(gamemode.LOCAL)
+                action=lambda: change_gamemode(gamemode.LOCAL),
             )
-            
+
             gammode_popup_ai_button = Button(
                 screen=gamemode_popup.surface,
                 image=None,
-                position=(gamemode_popup.surface.get_size()[0]//2*1, gamemode_popup.surface.get_size()[1]//1.6),
+                position=(
+                    gamemode_popup.surface.get_size()[0] // 2 * 1,
+                    gamemode_popup.surface.get_size()[1] // 1.6,
+                ),
                 text=&#34;AI&#34;,
                 font=menu_font.get_font(56),
                 color=&#34;white&#34;,
                 hover_color=&#34;black&#34;,
-                action = lambda: change_gamemode(gamemode.AI)
+                action=lambda: change_gamemode(gamemode.AI),
             )
-            
+
             gammode_popup_online_button = Button(
                 screen=gamemode_popup.surface,
                 image=None,
-                position=(gamemode_popup.surface.get_size()[0]//2*1.5, gamemode_popup.surface.get_size()[1]//1.6),
+                position=(
+                    gamemode_popup.surface.get_size()[0] // 2 * 1.5,
+                    gamemode_popup.surface.get_size()[1] // 1.6,
+                ),
                 text=&#34;ONLINE&#34;,
                 font=menu_font.get_font(56),
                 color=&#34;white&#34;,
                 hover_color=&#34;black&#34;,
-                action = lambda: change_gamemode(gamemode.ONLINE)
+                action=lambda: change_gamemode(gamemode.ONLINE),
             )
-            
+
             gamemode_popup.add_ui_element(gammode_popup_ai_button)
             gamemode_popup.add_ui_element(gammode_popup_local_button)
             gamemode_popup.add_ui_element(gammode_popup_online_button)
-            
+
             gamemode_popup.run()
-            game(screen, mode=mode, size=size, config=settings.get_settings()) #type: ignore
-            gamemode_popup.close() 
+            config = settings.get_settings()
+            config[&#34;difficulty&#34;] = 0
+            match cur_mode:
+                case gamemode.AI:
+                    difficulty_popup = Popup(
+                        screen=screen,
+                        title=&#34;Difficulty&#34;,
+                        size=(1280 // 2, 720 // 2.5),
+                        color=&#34;#0575BB&#34;,
+                    )
+
+                    def change_difficulty(new_difficulty: difficulty):
+                        &#34;&#34;&#34;
+                        Update the game mode and close the game mode selection popup.
+
+                        Args:
+                            new_mode (gamemode): The new game mode to be set (e.g., LOCAL, AI, or ONLINE).
+                        &#34;&#34;&#34;
+                        nonlocal cur_difficulty
+                        cur_difficulty = new_difficulty
+                        difficulty_popup.close()
+
+                    difficulty_popup_easy_button = Button(
+                        screen=difficulty_popup.surface,
+                        image=None,
+                        position=(
+                            difficulty_popup.surface.get_size()[0] // 2 * 0.5,
+                            difficulty_popup.surface.get_size()[1] // 1.6,
+                        ),
+                        text=&#34;Easy&#34;,
+                        font=menu_font.get_font(56),
+                        color=&#34;white&#34;,
+                        hover_color=&#34;black&#34;,
+                        action=lambda: change_difficulty(difficulty.EASY),
+                    )
+
+                    difficulty_popup_medium_button = Button(
+                        screen=difficulty_popup.surface,
+                        image=None,
+                        position=(
+                            difficulty_popup.surface.get_size()[0] // 2 * 1,
+                            difficulty_popup.surface.get_size()[1] // 1.6,
+                        ),
+                        text=&#34;Medium&#34;,
+                        font=menu_font.get_font(56),
+                        color=&#34;white&#34;,
+                        hover_color=&#34;black&#34;,
+                        action=lambda: change_difficulty(difficulty.MEDIUM),
+                    )
+
+                    difficulty_popup_hard_button = Button(
+                        screen=difficulty_popup.surface,
+                        image=None,
+                        position=(
+                            difficulty_popup.surface.get_size()[0] // 2 * 1.5,
+                            difficulty_popup.surface.get_size()[1] // 1.6,
+                        ),
+                        text=&#34;Hard&#34;,
+                        font=menu_font.get_font(56),
+                        color=&#34;white&#34;,
+                        hover_color=&#34;black&#34;,
+                        action=lambda: change_difficulty(difficulty.HARD),
+                    )
+
+                    difficulty_popup.add_ui_element(difficulty_popup_easy_button)
+                    difficulty_popup.add_ui_element(difficulty_popup_medium_button)
+                    difficulty_popup.add_ui_element(difficulty_popup_hard_button)
+                    difficulty_popup.run()
+                    config[&#34;difficulty&#34;] = cur_difficulty
+                    difficulty_popup.close()
+                case gamemode.ONLINE:
+                    pass
+                    # TODO: Implement Online Support.
+                    #       This will need to prompt the user for an IP and a port to connect to.
+
+            game(screen, mode=cur_mode, size=size, config=config)  # type: ignore
+            gamemode_popup.close()
             size_popup.close()
 
         # Create the rightmost size select button
         size_popup_3x3_button = Button(
             screen=size_popup.surface,
             image=None,
-            position=(size_popup.surface.get_size()[0]//2*0.5, size_popup.surface.get_size()[1]//1.25),
+            position=(
+                size_popup.surface.get_size()[0] // 2 * 0.5,
+                size_popup.surface.get_size()[1] // 1.25,
+            ),
             text=&#34;3x3&#34;,
             font=menu_font.get_font(56),
             color=&#34;white&#34;,
             hover_color=&#34;black&#34;,
-            action = lambda: play((3, 3)) 
+            action=lambda: play((3, 3)),
         )
 
         # Create the center size select button
         size_popup_5x5_button = Button(
             screen=size_popup.surface,
             image=None,
-            position=(size_popup.surface.get_size()[0]//2, size_popup.surface.get_size()[1]//1.25),
+            position=(
+                size_popup.surface.get_size()[0] // 2,
+                size_popup.surface.get_size()[1] // 1.25,
+            ),
             text=&#34;5x5&#34;,
             font=menu_font.get_font(56),
             color=&#34;white&#34;,
             hover_color=&#34;black&#34;,
-            action = lambda: play((5, 5)) 
+            action=lambda: play((5, 5)),
         )
-
 
         # Create the leftmost size select button
         size_popup_7x7_button = Button(
             screen=size_popup.surface,
             image=None,
-            position=(size_popup.surface.get_size()[0]//2*1.5, size_popup.surface.get_size()[1]//1.25),
+            position=(
+                size_popup.surface.get_size()[0] // 2 * 1.5,
+                size_popup.surface.get_size()[1] // 1.25,
+            ),
             text=&#34;7x7&#34;,
             font=menu_font.get_font(56),
             color=&#34;white&#34;,
             hover_color=&#34;black&#34;,
-            action = lambda: play((7, 7)) 
+            action=lambda: play((7, 7)),
         )
-
 
         # Create the x-size select textbox
         size_popup_custom_size_x_textbox = Textbox(
             screen=size_popup.surface,
-            position=(size_popup.surface.get_size()[0]//2*0.55, size_popup.surface.get_size()[1]//2),
-            placeholder_text=F&#34;{MIN_SIZE}-{MAX_SIZE}&#34;,
+            position=(
+                size_popup.surface.get_size()[0] // 2 * 0.55,
+                size_popup.surface.get_size()[1] // 2,
+            ),
+            placeholder_text=f&#34;{MIN_SIZE}-{MAX_SIZE}&#34;,
             placeholder_color=&#34;#424242&#34;,
             size=(125, 75),
             font=menu_font.get_font(56),
             text_color=&#34;black&#34;,
             background_color=&#34;white&#34;,
-            max_char = 2,
-            accepted_chars = [&#34;0&#34;,&#34;1&#34;,&#34;2&#34;,&#34;3&#34;,&#34;4&#34;,&#34;5&#34;,&#34;6&#34;,&#34;7&#34;,&#34;8&#34;,&#34;9&#34;]
+            max_char=2,
+            accepted_chars=[&#34;0&#34;, &#34;1&#34;, &#34;2&#34;, &#34;3&#34;, &#34;4&#34;, &#34;5&#34;, &#34;6&#34;, &#34;7&#34;, &#34;8&#34;, &#34;9&#34;],
         )
 
         # Create the y-size select textbox
         size_popup_custom_size_y_textbox = Textbox(
             screen=size_popup.surface,
-            position=(size_popup.surface.get_size()[0]//2*1.15, size_popup.surface.get_size()[1]//2),
-            placeholder_text=F&#34;{MIN_SIZE}-{MAX_SIZE}&#34;,
+            position=(
+                size_popup.surface.get_size()[0] // 2 * 1.15,
+                size_popup.surface.get_size()[1] // 2,
+            ),
+            placeholder_text=f&#34;{MIN_SIZE}-{MAX_SIZE}&#34;,
             placeholder_color=&#34;#424242&#34;,
             size=(125, 75),
             font=menu_font.get_font(56),
             text_color=&#34;black&#34;,
             background_color=&#34;white&#34;,
-            max_char = 2,
-            accepted_chars = [&#34;0&#34;,&#34;1&#34;,&#34;2&#34;,&#34;3&#34;,&#34;4&#34;,&#34;5&#34;,&#34;6&#34;,&#34;7&#34;,&#34;8&#34;,&#34;9&#34;]
+            max_char=2,
+            accepted_chars=[&#34;0&#34;, &#34;1&#34;, &#34;2&#34;, &#34;3&#34;, &#34;4&#34;, &#34;5&#34;, &#34;6&#34;, &#34;7&#34;, &#34;8&#34;, &#34;9&#34;],
         )
 
         def confirm_custom_size_button_handler():
@@ -582,43 +787,45 @@ def main_menu(screen: pygame.surface.Surface):
             y_size: int = 0
             x_size_text: str = size_popup_custom_size_x_textbox.text
             y_size_text: str = size_popup_custom_size_y_textbox.text
-            if x_size_text:
-                x_size = int(x_size_text)
-            else:
-                x_size = 5
-            
-            if y_size_text:
-                y_size = int(y_size_text)
-            else:
-                y_size = 5
-            
+            x_size = int(x_size_text) if x_size_text else 5
+            y_size = int(y_size_text) if y_size_text else 5
             if x_size &gt; MAX_SIZE:
                 x_size = MAX_SIZE
             elif x_size &lt; MIN_SIZE:
                 x_size = MIN_SIZE
-            
+
             if y_size &gt; MAX_SIZE:
                 y_size = MAX_SIZE
             elif y_size &lt; MIN_SIZE:
                 y_size = MIN_SIZE
-            
-            play((x_size, y_size)) 
+
+            play((x_size, y_size))
 
         # Create the custom size confirm button
         size_popup_confirm_custom_size_button = Button(
             screen=size_popup.surface,
             image=None,
-            position=(size_popup.surface.get_size()[0]//2*1.5, size_popup.surface.get_size()[1]//2),
+            position=(
+                size_popup.surface.get_size()[0] // 2 * 1.5,
+                size_popup.surface.get_size()[1] // 2,
+            ),
             text=&#34;OK&#34;,
             font=menu_font.get_font(64),
             color=&#34;white&#34;,
             hover_color=&#34;black&#34;,
-            action=confirm_custom_size_button_handler
+            action=confirm_custom_size_button_handler,
         )
 
         # Creates the &#34;X&#34; to be displayed between the two textboxes
-        x_label: pygame.surface.Surface = menu_font.get_font(96).render(f&#34;x&#34;, True, &#34;white&#34;)
-        x_rect: pygame.rect.Rect = x_label.get_rect(center=(size_popup.surface.get_size()[0]//2*0.85, size_popup.surface.get_size()[1]//2*0.95))
+        x_label: pygame.surface.Surface = menu_font.get_font(96).render(
+            &#34;x&#34;, True, &#34;white&#34;
+        )
+        x_rect: pygame.rect.Rect = x_label.get_rect(
+            center=(
+                size_popup.surface.get_size()[0] // 2 * 0.85,
+                size_popup.surface.get_size()[1] // 2 * 0.95,
+            )
+        )
 
         # Add all the created elements to the popup and run it
         size_popup.add_ui_element(size_popup_3x3_button)
@@ -634,10 +841,13 @@ def main_menu(screen: pygame.surface.Surface):
         uninteraction_timer = 10
 
     # Initializing on-screen elements #
-    background: pygame.surface.Surface = pygame.image.load(resource_path(&#34;jeu/assets/images/menu_background.png&#34;))
+    background: pygame.surface.Surface = pygame.image.load(
+        resource_path(&#34;jeu/assets/images/menu_background.png&#34;)
+    )
 
-    menu_text: pygame.surface.Surface = menu_font.get_font(
-        100).render(&#34;PIPOPIPETTE&#34;, True, &#34;#EEEEEE&#34;)
+    menu_text: pygame.surface.Surface = menu_font.get_font(100).render(
+        &#34;PIPOPIPETTE&#34;, True, &#34;#EEEEEE&#34;
+    )
     menu_rect: pygame.rect.Rect = menu_text.get_rect(center=(640, 75))
 
     play_button = Button(
@@ -648,7 +858,7 @@ def main_menu(screen: pygame.surface.Surface):
         font=menu_font.get_font(75),
         color=&#34;#FFFFFF&#34;,
         hover_color=&#34;#d7fcd4&#34;,
-        action=lambda: play_button_handler(screen)
+        action=lambda: play_button_handler(screen),
     )
     options_button = Button(
         screen=screen,
@@ -658,7 +868,7 @@ def main_menu(screen: pygame.surface.Surface):
         font=menu_font.get_font(75),
         color=&#34;#FFFFFF&#34;,
         hover_color=&#34;#d7fcd4&#34;,
-        action=lambda: options_screen(screen)
+        action=lambda: options_screen(screen),
     )
     quit_button = Button(
         screen=screen,
@@ -668,7 +878,7 @@ def main_menu(screen: pygame.surface.Surface):
         font=menu_font.get_font(75),
         color=&#34;#FFFFFF&#34;,
         hover_color=&#34;#d7fcd4&#34;,
-        action=quit
+        action=quit,
     )
 
     def account_button_handler():
@@ -676,16 +886,23 @@ def main_menu(screen: pygame.surface.Surface):
         login_screen(screen)
         uninteraction_timer = 10
 
-    account_button = Button(screen=screen, image=pygame.image.load(resource_path(&#34;jeu/assets/images/User.png&#34;)),
-                            position=(1280-75, 75),
-                            text=&#34; &#34;,
-                            font=menu_font.get_font(75),
-                            color=&#34;#FFFFFF&#34;,
-                            hover_color=&#34;#FFFFFF&#34;,
-                            action=account_button_handler
-                            )
+    account_button = Button(
+        screen=screen,
+        image=pygame.image.load(resource_path(&#34;jeu/assets/images/User.png&#34;)),
+        position=(1280 - 75, 75),
+        text=&#34; &#34;,
+        font=menu_font.get_font(75),
+        color=&#34;#FFFFFF&#34;,
+        hover_color=&#34;#FFFFFF&#34;,
+        action=account_button_handler,
+    )
     # Store all UI elements in a list for easy access
-    menu_buttons: tuple[UI, ...] = (account_button, play_button, options_button, quit_button)
+    menu_buttons: tuple[UI, ...] = (
+        account_button,
+        play_button,
+        options_button,
+        quit_button,
+    )
 
     while True:
         if uninteraction_timer &gt; 0:

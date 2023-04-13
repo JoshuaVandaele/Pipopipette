@@ -34,71 +34,95 @@ from jeu.engine.Square.Segment import Segment
 
 # &lt;========== class ==========&gt;
 
+
 class Square:
-    
     # &lt;----- init -----&gt;
-    
-    def __init__(self: Square, id = 0) -&gt; None:
+
+    def __init__(self: Square, id=0) -&gt; None:
         self.__left: Segment = Segment()
         self.__right: Segment = Segment()
         self.__top: Segment = Segment()
         self.__down: Segment = Segment()
-        self.__square_owner: int = -1 
+        self.__square_owner: int = -1
         self.__ID: Final[int] = id
-        
+
     # &lt;----- getter -----&gt;
-    
+
     @property
-    def left(self: Square) -&gt; Segment: return self.__left
-    
+    def left(self: Square) -&gt; Segment:
+        return self.__left
+
     @property
-    def right(self: Square) -&gt; Segment: return self.__right
-    
+    def right(self: Square) -&gt; Segment:
+        return self.__right
+
     @property
-    def top(self: Square) -&gt; Segment: return self.__top
-    
+    def top(self: Square) -&gt; Segment:
+        return self.__top
+
     @property
-    def down(self: Square) -&gt; Segment: return self.__down
-    
+    def down(self: Square) -&gt; Segment:
+        return self.__down
+
     @property
-    def square_owner(self: Square) -&gt; int: return self.__square_owner
-    
+    def square_owner(self: Square) -&gt; int:
+        return self.__square_owner
+
     @property
-    def ID(self: Square) -&gt; int: return self.__ID
-    
+    def ID(self: Square) -&gt; int:
+        return self.__ID
+
     # &lt;----- setter -----&gt;
-    
+
     @left.setter
-    def left(self: Square, owner_ID: int) -&gt; bool | None: 
+    def left(self: Square, owner_ID: int) -&gt; bool | None:
         self.__left.owner_ID = owner_ID
-        if self.__right.owner_ID != -1 and self.__top.owner_ID != -1 and self.__down.owner_ID != -1: 
+        if (
+            self.__right.owner_ID != -1
+            and self.__top.owner_ID != -1
+            and self.__down.owner_ID != -1
+        ):
             self.__square_owner = owner_ID
-    
+
     @right.setter
-    def right(self: Square, owner_ID: int) -&gt; bool | None: 
+    def right(self: Square, owner_ID: int) -&gt; bool | None:
         self.__right.owner_ID = owner_ID
-        if self.__left.owner_ID != -1 and self.__top.owner_ID != -1 and self.__down.owner_ID != -1: 
+        if (
+            self.__left.owner_ID != -1
+            and self.__top.owner_ID != -1
+            and self.__down.owner_ID != -1
+        ):
             self.__square_owner = owner_ID
-    
+
     @top.setter
-    def top(self: Square, owner_ID: int) -&gt; bool | None: 
+    def top(self: Square, owner_ID: int) -&gt; bool | None:
         self.__top.owner_ID = owner_ID
-        if self.__right.owner_ID != -1 and self.__left.owner_ID != -1 and self.__down.owner_ID != -1: 
+        if (
+            self.__right.owner_ID != -1
+            and self.__left.owner_ID != -1
+            and self.__down.owner_ID != -1
+        ):
             self.__square_owner = owner_ID
-    
+
     @down.setter
-    def down(self: Square, owner_ID: int) -&gt; bool | None: 
+    def down(self: Square, owner_ID: int) -&gt; bool | None:
         self.__down.owner_ID = owner_ID
-        if self.__right.owner_ID != -1 and self.__top.owner_ID != -1 and self.__left.owner_ID != -1:
+        if (
+            self.__right.owner_ID != -1
+            and self.__top.owner_ID != -1
+            and self.__left.owner_ID != -1
+        ):
             self.__square_owner = owner_ID
-        
+
     @square_owner.setter
-    def square_owner(self: Square, owner_ID: int) -&gt; None: self.__square_owner = owner_ID
-      
+    def square_owner(self: Square, owner_ID: int) -&gt; None:
+        self.__square_owner = owner_ID
+
     # &lt;----- str -----&gt;
-    
-    def __str__(self: Square) -&gt; str: return f&#34;[id:{self.__ID}(l:{self.__left.owner_ID},r:{self.__right.owner_ID},t{self.__top.owner_ID},d{self.__down.owner_ID}), owner:{self.__square_owner}]&#34;   
-    
+
+    def __str__(self: Square) -&gt; str:
+        return f&#34;[id:{self.__ID}(l:{self.__left.owner_ID},r:{self.__right.owner_ID},t{self.__top.owner_ID},d{self.__down.owner_ID}), owner:{self.__square_owner}]&#34;
+
     def copy(self: Square) -&gt; Square:
         &#34;&#34;&#34;Returns a deep copy of this Square instance.
 
@@ -134,70 +158,93 @@ class Square:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Square:
-    
     # &lt;----- init -----&gt;
-    
-    def __init__(self: Square, id = 0) -&gt; None:
+
+    def __init__(self: Square, id=0) -&gt; None:
         self.__left: Segment = Segment()
         self.__right: Segment = Segment()
         self.__top: Segment = Segment()
         self.__down: Segment = Segment()
-        self.__square_owner: int = -1 
+        self.__square_owner: int = -1
         self.__ID: Final[int] = id
-        
+
     # &lt;----- getter -----&gt;
-    
+
     @property
-    def left(self: Square) -&gt; Segment: return self.__left
-    
+    def left(self: Square) -&gt; Segment:
+        return self.__left
+
     @property
-    def right(self: Square) -&gt; Segment: return self.__right
-    
+    def right(self: Square) -&gt; Segment:
+        return self.__right
+
     @property
-    def top(self: Square) -&gt; Segment: return self.__top
-    
+    def top(self: Square) -&gt; Segment:
+        return self.__top
+
     @property
-    def down(self: Square) -&gt; Segment: return self.__down
-    
+    def down(self: Square) -&gt; Segment:
+        return self.__down
+
     @property
-    def square_owner(self: Square) -&gt; int: return self.__square_owner
-    
+    def square_owner(self: Square) -&gt; int:
+        return self.__square_owner
+
     @property
-    def ID(self: Square) -&gt; int: return self.__ID
-    
+    def ID(self: Square) -&gt; int:
+        return self.__ID
+
     # &lt;----- setter -----&gt;
-    
+
     @left.setter
-    def left(self: Square, owner_ID: int) -&gt; bool | None: 
+    def left(self: Square, owner_ID: int) -&gt; bool | None:
         self.__left.owner_ID = owner_ID
-        if self.__right.owner_ID != -1 and self.__top.owner_ID != -1 and self.__down.owner_ID != -1: 
+        if (
+            self.__right.owner_ID != -1
+            and self.__top.owner_ID != -1
+            and self.__down.owner_ID != -1
+        ):
             self.__square_owner = owner_ID
-    
+
     @right.setter
-    def right(self: Square, owner_ID: int) -&gt; bool | None: 
+    def right(self: Square, owner_ID: int) -&gt; bool | None:
         self.__right.owner_ID = owner_ID
-        if self.__left.owner_ID != -1 and self.__top.owner_ID != -1 and self.__down.owner_ID != -1: 
+        if (
+            self.__left.owner_ID != -1
+            and self.__top.owner_ID != -1
+            and self.__down.owner_ID != -1
+        ):
             self.__square_owner = owner_ID
-    
+
     @top.setter
-    def top(self: Square, owner_ID: int) -&gt; bool | None: 
+    def top(self: Square, owner_ID: int) -&gt; bool | None:
         self.__top.owner_ID = owner_ID
-        if self.__right.owner_ID != -1 and self.__left.owner_ID != -1 and self.__down.owner_ID != -1: 
+        if (
+            self.__right.owner_ID != -1
+            and self.__left.owner_ID != -1
+            and self.__down.owner_ID != -1
+        ):
             self.__square_owner = owner_ID
-    
+
     @down.setter
-    def down(self: Square, owner_ID: int) -&gt; bool | None: 
+    def down(self: Square, owner_ID: int) -&gt; bool | None:
         self.__down.owner_ID = owner_ID
-        if self.__right.owner_ID != -1 and self.__top.owner_ID != -1 and self.__left.owner_ID != -1:
+        if (
+            self.__right.owner_ID != -1
+            and self.__top.owner_ID != -1
+            and self.__left.owner_ID != -1
+        ):
             self.__square_owner = owner_ID
-        
+
     @square_owner.setter
-    def square_owner(self: Square, owner_ID: int) -&gt; None: self.__square_owner = owner_ID
-      
+    def square_owner(self: Square, owner_ID: int) -&gt; None:
+        self.__square_owner = owner_ID
+
     # &lt;----- str -----&gt;
-    
-    def __str__(self: Square) -&gt; str: return f&#34;[id:{self.__ID}(l:{self.__left.owner_ID},r:{self.__right.owner_ID},t{self.__top.owner_ID},d{self.__down.owner_ID}), owner:{self.__square_owner}]&#34;   
-    
+
+    def __str__(self: Square) -&gt; str:
+        return f&#34;[id:{self.__ID}(l:{self.__left.owner_ID},r:{self.__right.owner_ID},t{self.__top.owner_ID},d{self.__down.owner_ID}), owner:{self.__square_owner}]&#34;
+
     def copy(self: Square) -&gt; Square:
         &#34;&#34;&#34;Returns a deep copy of this Square instance.
 
@@ -222,7 +269,8 @@ class Square:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def ID(self: Square) -&gt; int: return self.__ID</code></pre>
+def ID(self: Square) -&gt; int:
+    return self.__ID</code></pre>
 </details>
 </dd>
 <dt id="jeu.engine.Square.Square.Square.down"><code class="name">var <span class="ident">down</span> : <a title="jeu.engine.Square.Segment.Segment" href="Segment.html#jeu.engine.Square.Segment.Segment">Segment</a></code></dt>
@@ -233,7 +281,8 @@ def ID(self: Square) -&gt; int: return self.__ID</code></pre>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def down(self: Square) -&gt; Segment: return self.__down</code></pre>
+def down(self: Square) -&gt; Segment:
+    return self.__down</code></pre>
 </details>
 </dd>
 <dt id="jeu.engine.Square.Square.Square.left"><code class="name">var <span class="ident">left</span> : <a title="jeu.engine.Square.Segment.Segment" href="Segment.html#jeu.engine.Square.Segment.Segment">Segment</a></code></dt>
@@ -244,7 +293,8 @@ def down(self: Square) -&gt; Segment: return self.__down</code></pre>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def left(self: Square) -&gt; Segment: return self.__left</code></pre>
+def left(self: Square) -&gt; Segment:
+    return self.__left</code></pre>
 </details>
 </dd>
 <dt id="jeu.engine.Square.Square.Square.right"><code class="name">var <span class="ident">right</span> : <a title="jeu.engine.Square.Segment.Segment" href="Segment.html#jeu.engine.Square.Segment.Segment">Segment</a></code></dt>
@@ -255,7 +305,8 @@ def left(self: Square) -&gt; Segment: return self.__left</code></pre>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def right(self: Square) -&gt; Segment: return self.__right</code></pre>
+def right(self: Square) -&gt; Segment:
+    return self.__right</code></pre>
 </details>
 </dd>
 <dt id="jeu.engine.Square.Square.Square.square_owner"><code class="name">var <span class="ident">square_owner</span> : int</code></dt>
@@ -266,7 +317,8 @@ def right(self: Square) -&gt; Segment: return self.__right</code></pre>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def square_owner(self: Square) -&gt; int: return self.__square_owner</code></pre>
+def square_owner(self: Square) -&gt; int:
+    return self.__square_owner</code></pre>
 </details>
 </dd>
 <dt id="jeu.engine.Square.Square.Square.top"><code class="name">var <span class="ident">top</span> : <a title="jeu.engine.Square.Segment.Segment" href="Segment.html#jeu.engine.Square.Segment.Segment">Segment</a></code></dt>
@@ -277,7 +329,8 @@ def square_owner(self: Square) -&gt; int: return self.__square_owner</code></pre
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def top(self: Square) -&gt; Segment: return self.__top</code></pre>
+def top(self: Square) -&gt; Segment:
+    return self.__top</code></pre>
 </details>
 </dd>
 </dl>

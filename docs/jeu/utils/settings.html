@@ -54,8 +54,8 @@ def integrity_check(settings: dict[str, Any]) -&gt; dict[str, Any]:
 
     if (
         &#34;timer&#34; in settings
-        and (type(settings[&#34;timer&#34;]) != int)
-        or (settings[&#34;timer&#34;] &lt; 0)
+        and ((type(settings[&#34;timer&#34;]) != int)
+        or (settings[&#34;timer&#34;] &lt; 0))
     ):
         settings.pop(&#34;timer&#34;)
     return settings
@@ -181,8 +181,8 @@ def get_settings() -&gt; dict[str, Any]:
 
     if (
         &#34;timer&#34; in settings
-        and (type(settings[&#34;timer&#34;]) != int)
-        or (settings[&#34;timer&#34;] &lt; 0)
+        and ((type(settings[&#34;timer&#34;]) != int)
+        or (settings[&#34;timer&#34;] &lt; 0))
     ):
         settings.pop(&#34;timer&#34;)
     return settings</code></pre>

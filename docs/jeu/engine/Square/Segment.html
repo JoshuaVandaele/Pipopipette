@@ -32,31 +32,33 @@ from __future__ import annotations
 
 # &lt;========== class ==========&gt;
 
-class Segment():
+
+class Segment:
     &#34;&#34;&#34;
     Used to represent a segment, placed by a player.
     &#34;&#34;&#34;
-    
+
     # &lt;----- init -----&gt;
-    
+
     def __init__(self: Segment, owner_ID: int = -1) -&gt; None:
         &#34;&#34;&#34;
-            Create a new Segment
-            Args:
-                ownerID (int): The ID of the user who placed this. Default to -1 for no owner
+        Create a new Segment
+        Args:
+            ownerID (int): The ID of the user who placed this. Default to -1 for no owner
         &#34;&#34;&#34;
         self.__owner_ID: int = owner_ID
-        
+
     # &lt;----- getter -----&gt;
-    
+
     @property
-    def owner_ID(self: Segment) -&gt; int: return self.__owner_ID
-    
+    def owner_ID(self: Segment) -&gt; int:
+        return self.__owner_ID
+
     # &lt;----- setter -----&gt;
-    
+
     @owner_ID.setter
-    def owner_ID(self: Segment, owner_ID: int) -&gt; None: self.__owner_ID = owner_ID
-        </code></pre>
+    def owner_ID(self: Segment, owner_ID: int) -&gt; None:
+        self.__owner_ID = owner_ID</code></pre>
 </details>
 </section>
 <section>
@@ -84,30 +86,32 @@ class Segment():
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Segment():
+<pre><code class="python">class Segment:
     &#34;&#34;&#34;
     Used to represent a segment, placed by a player.
     &#34;&#34;&#34;
-    
+
     # &lt;----- init -----&gt;
-    
+
     def __init__(self: Segment, owner_ID: int = -1) -&gt; None:
         &#34;&#34;&#34;
-            Create a new Segment
-            Args:
-                ownerID (int): The ID of the user who placed this. Default to -1 for no owner
+        Create a new Segment
+        Args:
+            ownerID (int): The ID of the user who placed this. Default to -1 for no owner
         &#34;&#34;&#34;
         self.__owner_ID: int = owner_ID
-        
+
     # &lt;----- getter -----&gt;
-    
+
     @property
-    def owner_ID(self: Segment) -&gt; int: return self.__owner_ID
-    
+    def owner_ID(self: Segment) -&gt; int:
+        return self.__owner_ID
+
     # &lt;----- setter -----&gt;
-    
+
     @owner_ID.setter
-    def owner_ID(self: Segment, owner_ID: int) -&gt; None: self.__owner_ID = owner_ID</code></pre>
+    def owner_ID(self: Segment, owner_ID: int) -&gt; None:
+        self.__owner_ID = owner_ID</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
@@ -119,7 +123,8 @@ class Segment():
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def owner_ID(self: Segment) -&gt; int: return self.__owner_ID</code></pre>
+def owner_ID(self: Segment) -&gt; int:
+    return self.__owner_ID</code></pre>
 </details>
 </dd>
 </dl>

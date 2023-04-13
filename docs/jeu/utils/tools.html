@@ -43,14 +43,23 @@ def prompt_for_file(file_kind: str, extensions: list[str]) -&gt; str:
     &#34;&#34;&#34;
     top = tkinter.Tk()
     top.withdraw()
-    file_name = tkinter.filedialog.askopenfilename(filetypes=[(file_kind, &#39; &#39;.join(extensions))])
+    file_name = tkinter.filedialog.askopenfilename(
+        filetypes=[(file_kind, &#34; &#34;.join(extensions))]
+    )
     top.destroy()
     return file_name
+
 
 class gamemode(IntEnum):
     LOCAL = 0
     AI = 1
-    ONLINE = 2</code></pre>
+    ONLINE = 2
+
+
+class difficulty(IntEnum):
+    EASY = 1
+    MEDIUM = 3
+    HARD = 7</code></pre>
 </details>
 </section>
 <section>
@@ -93,7 +102,9 @@ class gamemode(IntEnum):
     &#34;&#34;&#34;
     top = tkinter.Tk()
     top.withdraw()
-    file_name = tkinter.filedialog.askopenfilename(filetypes=[(file_kind, &#39; &#39;.join(extensions))])
+    file_name = tkinter.filedialog.askopenfilename(
+        filetypes=[(file_kind, &#34; &#34;.join(extensions))]
+    )
     top.destroy()
     return file_name</code></pre>
 </details>
@@ -103,12 +114,50 @@ class gamemode(IntEnum):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="jeu.utils.tools.gamemode"><code class="flex name class">
-<span>class <span class="ident">gamemode</span></span>
-<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+<dt id="jeu.utils.tools.difficulty"><code class="flex name class">
+<span>class <span class="ident">difficulty</span></span>
+<span>(</span><span>*args, **kwds)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>An enumeration.</p></div>
+<div class="desc"><p>Enum where members are also (and must be) ints</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class difficulty(IntEnum):
+    EASY = 1
+    MEDIUM = 3
+    HARD = 7</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.ReprEnum</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="jeu.utils.tools.difficulty.EASY"><code class="name">var <span class="ident">EASY</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="jeu.utils.tools.difficulty.HARD"><code class="name">var <span class="ident">HARD</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="jeu.utils.tools.difficulty.MEDIUM"><code class="name">var <span class="ident">MEDIUM</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="jeu.utils.tools.gamemode"><code class="flex name class">
+<span>class <span class="ident">gamemode</span></span>
+<span>(</span><span>*args, **kwds)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Enum where members are also (and must be) ints</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -122,6 +171,7 @@ class gamemode(IntEnum):
 <ul class="hlist">
 <li>enum.IntEnum</li>
 <li>builtins.int</li>
+<li>enum.ReprEnum</li>
 <li>enum.Enum</li>
 </ul>
 <h3>Class variables</h3>
@@ -161,6 +211,14 @@ class gamemode(IntEnum):
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
+<li>
+<h4><code><a title="jeu.utils.tools.difficulty" href="#jeu.utils.tools.difficulty">difficulty</a></code></h4>
+<ul class="">
+<li><code><a title="jeu.utils.tools.difficulty.EASY" href="#jeu.utils.tools.difficulty.EASY">EASY</a></code></li>
+<li><code><a title="jeu.utils.tools.difficulty.HARD" href="#jeu.utils.tools.difficulty.HARD">HARD</a></code></li>
+<li><code><a title="jeu.utils.tools.difficulty.MEDIUM" href="#jeu.utils.tools.difficulty.MEDIUM">MEDIUM</a></code></li>
+</ul>
+</li>
 <li>
 <h4><code><a title="jeu.utils.tools.gamemode" href="#jeu.utils.tools.gamemode">gamemode</a></code></h4>
 <ul class="">
