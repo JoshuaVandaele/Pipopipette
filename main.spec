@@ -3,13 +3,14 @@
 pyinstaller ./main.spec
 This will create a binary in dist/
 """
+
 import os
 
 block_cipher = None
 
 
 a = Analysis(  # type: ignore
-    ['main.py'],
+    ["main.py"],
     pathex=[],
     binaries=[],
     datas=[],
@@ -26,9 +27,9 @@ a = Analysis(  # type: ignore
 
 for subdir, dirs, files in os.walk("jeu/assets"):
     for file in files:
-        path = os.path.abspath(subdir + "/" + file)
-        print(subdir+"/"+file, path)
-        a.datas += [(subdir + "/" + file, path, "DATA")]
+        path = os.path.abspath(f"{subdir}/{file}")
+        print(f"{subdir}/{file}", path)
+        a.datas += [(f"{subdir}/{file}", path, "DATA")]
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)  # type: ignore
 
@@ -39,7 +40,7 @@ exe = EXE(  # type: ignore
     a.zipfiles,
     a.datas,
     [],
-    name='Pipopipette',
+    name="Pipopipette",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

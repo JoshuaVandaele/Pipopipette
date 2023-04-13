@@ -9,7 +9,8 @@ from jeu.engine.Player.Player import Player
 SAVE_FOLDER_PATH = f"{str(Path.home())}/Pipopipette"
 SAVE_FILE_PATH = f"{SAVE_FOLDER_PATH}/players.json"
 
-class SaveSystem():
+
+class SaveSystem:
     """
     Static Class used to save and load data. Will not update the password for this player
     """
@@ -30,14 +31,14 @@ class SaveSystem():
             json_file.close()
 
         for i in range(len(json_object)):  # Loop to get the right entry for this user
-            if json_object[i]['username'] == player.NAME:
+            if json_object[i]["username"] == player.NAME:
                 # if bcrypt.checkpw(str.encode(player.getPassword()), str.encode(jsonObject[i]['password'])):
                 # Found user to edit
                 new_entry = {
-                    'username': player.NAME,
-                    'password': json_object[i]['password'],
-                    'id': player.ID,
-                    'points': player.score.value,
+                    "username": player.NAME,
+                    "password": json_object[i]["password"],
+                    "id": player.ID,
+                    "points": player.score.value,
                 }
                 json_object[i] = new_entry  # Old entry replaced
 
@@ -62,9 +63,11 @@ class SaveSystem():
             json_file.close()
 
         for element in json_object:
-            if element['username'] == username:
-                if bcrypt.checkpw(str.encode(password), str.encode(element['password'])):
-                    return Player(username, element['id'], element['points'])
+            if element["username"] == username:
+                if bcrypt.checkpw(
+                    str.encode(password), str.encode(element["password"])
+                ):
+                    return Player(username, element["id"], element["points"])
                 # User found, but wrong password. We don't need to continue looking for the right user
                 print("Wrong password !")
                 return None
@@ -86,10 +89,12 @@ class SaveSystem():
             json_object = json.load(json_file)
             json_file.close()
 
-        return any(element['username'] == username for element in json_object)
+        return any(element["username"] == username for element in json_object)
 
     @staticmethod
-    def create_user(username: str, password: str, id: int, points: int = 0) -> Player|None:
+    def create_user(
+        username: str, password: str, id: int, points: int = 0
+    ) -> Player | None:
         """Register a new user in the save system
 
         Args:
@@ -101,7 +106,11 @@ class SaveSystem():
         Returns:
             Player|None: A player object, or None if it couldn't be created.
         """
-        if (not username) or (not password) or (SaveSystem.is_login_already_taken(username)):
+        if (
+            (not username)
+            or (not password)
+            or (SaveSystem.is_login_already_taken(username))
+        ):
             return None
         SaveSystem.__ensure_exists()
         with open(SAVE_FILE_PATH) as json_file:
@@ -109,10 +118,12 @@ class SaveSystem():
             json_file.close()
 
         new_entry = {
-            'username': username,
-            'password': bcrypt.hashpw(str.encode(password), bcrypt.gensalt()).decode("utf-8"),
-            'id': id,
-            'points': points
+            "username": username,
+            "password": bcrypt.hashpw(str.encode(password), bcrypt.gensalt()).decode(
+                "utf-8"
+            ),
+            "id": id,
+            "points": points,
         }
 
         json_object.append(new_entry)
@@ -138,19 +149,19 @@ class SaveSystem():
         idAvailable = 0
 
         for player in json_object:
-            if int(player["id"]) > idAvailable: idAvailable = int(player["id"])
+            if int(player["id"]) > idAvailable:
+                idAvailable = int(player["id"])
 
         return int(idAvailable) + 1
-    
+
     @staticmethod
     def __ensure_exists():
-        """Ensures the save folder path and file exists, and are not corrupted.
-        """
+        """Ensures the save folder path and file exists, and are not corrupted."""
         # Create the folder
         Path(SAVE_FOLDER_PATH).mkdir(parents=True, exist_ok=True)
         # Create the save file if it doesn't exist
         if not Path(SAVE_FILE_PATH).is_file():
-            with open(SAVE_FILE_PATH, 'w') as f:
+            with open(SAVE_FILE_PATH, "w") as f:
                 f.write("[]")
 
         # Try and read the save file to see if it's corrupted,
@@ -162,16 +173,20 @@ class SaveSystem():
                 print("The players file is corrupted! Creating a new one..")
                 corrupted_file = Path(SAVE_FOLDER_PATH)
                 corrupted_file.rename(Path(f"{SAVE_FOLDER_PATH}/{time()}.json"))
-                with open(SAVE_FILE_PATH, 'w') as f:
+                with open(SAVE_FILE_PATH, "w") as f:
                     f.write("[]")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Unit test
-    print(bcrypt.hashpw(b'1234', bcrypt.gensalt()))
-    print(bcrypt.checkpw(b'1234', b'$2b$12$Fz6ZG4GIm0jRkN35acYaXeoDMPlPQGcclnChced.W.ivZnI5YWv16'))
+    print(bcrypt.hashpw(b"1234", bcrypt.gensalt()))
+    print(
+        bcrypt.checkpw(
+            b"1234", b"$2b$12$Fz6ZG4GIm0jRkN35acYaXeoDMPlPQGcclnChced.W.ivZnI5YWv16"
+        )
+    )
 
-    player: Player|None = SaveSystem.load_player('test', '1234')
+    player: Player | None = SaveSystem.load_player("test", "1234")
     print(player)
     if isinstance(player, Player):
         SaveSystem.save_player(player)

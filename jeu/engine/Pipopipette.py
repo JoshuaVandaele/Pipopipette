@@ -11,13 +11,14 @@ if TYPE_CHECKING:
 
 # <========== Class ==========>
 
-class Pipopipette():
+
+class Pipopipette:
     """
     The class that will manage the playground.
     """
-    
+
     # <----- init ----->
-    
+
     def __init__(self: Pipopipette, width: int = 5, height: int = 5) -> None:
         """
 
@@ -29,33 +30,37 @@ class Pipopipette():
         self.__HEIGHT: Final[int] = height
         self.__list_square: list[Square] = [Square(i) for i in range(width * height)]
         shuffle(self.__list_square)
-    
+
     # <----- getter ----->
-    
+
     @property
-    def WIDTH(self: Pipopipette) -> int: return self.__WIDTH
-    
+    def WIDTH(self: Pipopipette) -> int:
+        return self.__WIDTH
+
     @property
-    def HEIGHT(self: Pipopipette) -> int: return self.__HEIGHT
-    
+    def HEIGHT(self: Pipopipette) -> int:
+        return self.__HEIGHT
+
     @property
-    def list_square(self: Pipopipette) -> list[Square]: return self.__list_square
-    
+    def list_square(self: Pipopipette) -> list[Square]:
+        return self.__list_square
+
     # <----- setter ----->
 
     @list_square.setter
-    def list_square(self: Pipopipette, newlist_square: list[Square]) -> None: self.__list_square = newlist_square.copy()
+    def list_square(self: Pipopipette, newlist_square: list[Square]) -> None:
+        self.__list_square = newlist_square.copy()
 
     # <----- str ----->
 
     def __str__(self: Pipopipette) -> str:
         return "".join(f"{square.__str__()} " for square in self.__list_square)
-    
-     # <----- get_square_by_ID ----->
-    
+
+    # <----- get_square_by_ID ----->
+
     def get_square_by_ID(self: Pipopipette, id: int) -> Square | None:
         """Used to get a Square by his ID
-        
+
         Args:
             id: A Square's id
 
@@ -63,12 +68,12 @@ class Pipopipette():
             The found square, or None
         """
         return next((square for square in self.__list_square if square.ID == id), None)
-    
+
     # <----- set_side ----->
-    
+
     def set_side(self: Pipopipette, square_ID: int, side: str, owner_ID: int) -> None:
         """Define the owner of a side.
-        
+
         Args:
             square_ID (int): ID of the Squre to edit.
             side (str): 'l'; 'r', 't', or 'd'. Side to edit.
@@ -78,26 +83,34 @@ class Pipopipette():
         if (square := self.get_square_by_ID(square_ID)) is None:
             return
         match side:
-            case 'l':
+            case "l":
                 square.left = owner_ID
-                if ((neighbor := self.get_square_by_ID(square_ID-1)) != None and square_ID%self.__WIDTH):
+                if (
+                    neighbor := self.get_square_by_ID(square_ID - 1)
+                ) != None and square_ID % self.__WIDTH:
                     neighbor.right = owner_ID
-            case 'r':
+            case "r":
                 square.right = owner_ID
-                if ((neighbor := self.get_square_by_ID(square_ID+1)) != None and neighbor.ID%(self.__WIDTH)):
+                if (
+                    neighbor := self.get_square_by_ID(square_ID + 1)
+                ) != None and neighbor.ID % (self.__WIDTH):
                     neighbor.left = owner_ID
-            case 't':
+            case "t":
                 square.top = owner_ID
-                if (neighbor := self.get_square_by_ID(square_ID-self.__WIDTH)) != None:
+                if (
+                    neighbor := self.get_square_by_ID(square_ID - self.__WIDTH)
+                ) != None:
                     neighbor.down = owner_ID
-            case 'd':
+            case "d":
                 square.down = owner_ID
-                if (neighbor := self.get_square_by_ID(square_ID+self.__WIDTH)) != None:
+                if (
+                    neighbor := self.get_square_by_ID(square_ID + self.__WIDTH)
+                ) != None:
                     neighbor.top = owner_ID
 
-    def get_side(self: Pipopipette, square_ID: int, side: str) ->  Segment|None:
+    def get_side(self: Pipopipette, square_ID: int, side: str) -> Segment | None:
         """Gets the owner of a side.
-        
+
         Args:
             square_ID (int): ID of the Squre to edit.
             side (str): 'l'; 'r', 't', or 'd'. Side to edit.
@@ -105,20 +118,20 @@ class Pipopipette():
         """
         if (square := self.get_square_by_ID(square_ID)) != None:
             match side:
-                case 'l':
+                case "l":
                     return square.left
-                case 'r':
+                case "r":
                     return square.right
-                case 't':
+                case "t":
                     return square.top
-                case 'd':
+                case "d":
                     return square.down
 
     # <----- valide_target ----->
-    
+
     def valid_target(self: Pipopipette, square_ID: int, side: str) -> bool:
         """Weither or not a player can place a Segment here.
-        
+
         Args:
             Square_ID (int): ID of the square to verify.
             side (str): 'l', 'r', 't', or 'd'. Side to verify.
@@ -129,13 +142,13 @@ class Pipopipette():
         """
         if (square := self.get_square_by_ID(square_ID)) != None:
             match side:
-                case 'l':
+                case "l":
                     return square.left.owner_ID == -1
-                case 'r':
+                case "r":
                     return square.right.owner_ID == -1
-                case 't':
+                case "t":
                     return square.top.owner_ID == -1
-                case 'd':
+                case "d":
                     return square.down.owner_ID == -1
         return False
 

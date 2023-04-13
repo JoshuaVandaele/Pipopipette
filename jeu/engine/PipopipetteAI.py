@@ -5,10 +5,12 @@ from jeu.engine.PipopipetteGameplay import PipopipetteGameplay
 
 
 class PipopipetteAI:
-    """Class which will be used to control the AI's logic.
-    """
+    """Class which will be used to control the AI's logic."""
+
     @staticmethod
-    def __list_moves(gameplay: PipopipetteGameplay) -> Generator[tuple[int, str], None, None]:
+    def __list_moves(
+        gameplay: PipopipetteGameplay,
+    ) -> Generator[tuple[int, str], None, None]:
         """Iterator to go through the valid moves the player can go through
 
         Args:
@@ -18,7 +20,12 @@ class PipopipetteAI:
             Generator[tuple[int, str], None, None]: Generator
         """
         # List of checked sides: dict[side, list[square_id]]
-        checked_sides: dict[str, set[int]] = {'l': set(), 'r': set(), 't': set(), 'd': set()}
+        checked_sides: dict[str, set[int]] = {
+            "l": set(),
+            "r": set(),
+            "t": set(),
+            "d": set(),
+        }
         width: int = 10
 
         for square in gameplay.pipopipette.list_square:
@@ -27,22 +34,24 @@ class PipopipetteAI:
 
                 if square.left.owner_ID == -1 and square_id not in checked_sides["l"]:
                     checked_sides["r"].add(square_id - 1)
-                    yield square_id, 'l'
+                    yield square_id, "l"
 
                 if square.top.owner_ID == -1 and square_id not in checked_sides["t"]:
                     checked_sides["d"].add(square_id - width)
-                    yield square_id, 't'
+                    yield square_id, "t"
 
                 if square.right.owner_ID == -1 and square_id not in checked_sides["r"]:
                     checked_sides["l"].add(square_id + 1)
-                    yield square_id, 'r'
+                    yield square_id, "r"
 
                 if square.down.owner_ID == -1 and square_id not in checked_sides["d"]:
                     checked_sides["t"].add(square_id + width)
-                    yield square_id, 'd'
+                    yield square_id, "d"
 
     @staticmethod
-    def move_random(gameplay: PipopipetteGameplay) -> tuple[None, None] | tuple[int, str]:
+    def move_random(
+        gameplay: PipopipetteGameplay,
+    ) -> tuple[None, None] | tuple[int, str]:
         """Pick a random move for the AI to play
         Args:
             gameplay (PipopipetteGameplay): Game to play on
@@ -55,7 +64,9 @@ class PipopipetteAI:
             return (None, None)
 
     @staticmethod
-    def move_minmax(gameplay: PipopipetteGameplay, depth: int = 2) -> tuple[None, None] | tuple[int, str]:
+    def move_minmax(
+        gameplay: PipopipetteGameplay, depth: int = 2
+    ) -> tuple[None, None] | tuple[int, str]:
         """Pick a move for the AI to play by simulating the next moves
 
         Args:
@@ -67,10 +78,12 @@ class PipopipetteAI:
         """
         memo = {}
 
-        def max_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -> float:
+        def max_value(
+            gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float
+        ) -> float:
             """
             Calculate the maximum value of the game state for the AI player using the minimax algorithm with alpha-beta pruning
-            
+
             Args:
                 gameplay (PipopipetteGameplay): The current game state.
                 depth (int): The remaining depth of the search tree.
@@ -88,7 +101,7 @@ class PipopipetteAI:
                 memo[key] = PipopipetteAI.evaluate(gameplay)
                 return memo[key]
 
-            value = float('-inf')
+            value = float("-inf")
             for move in PipopipetteAI.__list_moves(gameplay):
                 next_state = PipopipetteAI.get_next_state(gameplay, *move)
                 value = max(value, min_value(next_state, depth - 1, alpha, beta))
@@ -98,10 +111,12 @@ class PipopipetteAI:
             memo[key] = value
             return value
 
-        def min_value(gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float) -> float:
+        def min_value(
+            gameplay: PipopipetteGameplay, depth: int, alpha: float, beta: float
+        ) -> float:
             """
             Calculate the minimum value of the game state for the opponent player using the minimax algorithm with alpha-beta pruning.
-            
+
             Args:
                 gameplay (PipopipetteGameplay): The current game state.
                 depth (int): The remaining depth of the search tree.
@@ -119,7 +134,7 @@ class PipopipetteAI:
                 memo[key] = PipopipetteAI.evaluate(gameplay)
                 return memo[key]
 
-            value = float('inf')
+            value = float("inf")
             for move in PipopipetteAI.__list_moves(gameplay):
                 next_state = PipopipetteAI.get_next_state(gameplay, *move)
                 value = min(value, max_value(next_state, depth - 1, alpha, beta))
@@ -130,13 +145,13 @@ class PipopipetteAI:
             return value
 
         best_move = (None, None)
-        best_value = float('-inf')
-        alpha = float('-inf')
-        beta = float('inf')
+        best_value = float("-inf")
+        alpha = float("-inf")
+        beta = float("inf")
         for move in PipopipetteAI.__list_moves(gameplay):
             next_state = PipopipetteAI.get_next_state(gameplay, *move)
             value = min_value(next_state, depth - 1, alpha, beta)
-            if best_value == float('-inf') or value > best_value:
+            if best_value == float("-inf") or value > best_value:
                 best_value = value
                 best_move = move
             alpha = max(alpha, best_value)
@@ -154,10 +169,12 @@ class PipopipetteAI:
         """
         opponent_score, ai_score = gameplay.get_score()
 
-        return (ai_score*2) - opponent_score
+        return (ai_score * 2) - opponent_score
 
     @staticmethod
-    def get_next_state(gameplay: PipopipetteGameplay, square_id: int, side: str) -> 'PipopipetteGameplay':
+    def get_next_state(
+        gameplay: PipopipetteGameplay, square_id: int, side: str
+    ) -> "PipopipetteGameplay":
         """Return the next game state after applying a move
 
         Args:
@@ -170,7 +187,9 @@ class PipopipetteAI:
         # Create a copy of the game board
         new_gameplay = gameplay.copy()
 
-        new_gameplay.pipopipette.set_side(square_id, side, new_gameplay.current_player_ID)
+        new_gameplay.pipopipette.set_side(
+            square_id, side, new_gameplay.current_player_ID
+        )
         new_gameplay.next_player()
 
         return new_gameplay
